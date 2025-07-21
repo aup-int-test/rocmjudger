@@ -4,6 +4,8 @@
 #include <hip/hip_runtime.h>
 #include <float.h>
 
+#include <fstream>
+
 #define threadsPerBlock 256
 
 __device__ void atomicMaxfloat(float *const addr, const float val) {
@@ -27,7 +29,6 @@ __global__ void findmax(const float* input, float* globalmax, int N) {
     sdata[tidx] = (idx < N) ? input[idx] : 0.0f;
     
     for (int i = blockDim.x / 2; i > 0; i >>= 1) {
-        // bank conflict?
         if (tidx < i) sdata[tidx] = fmax(sdata[tidx], sdata[tidx + i]);
         __syncthreads();
     }
@@ -56,7 +57,7 @@ __global__ void exponentialsum(const float* input, float* output, int N, float g
     if (tidx == 0) atomicAdd(globalsum, sdata[0]); 
 }
 
-__global__ void softmax(const float* input, float* output, int N, float globalsum) {
+__global__ void softmax(float* output, int N, float globalsum) {
     int idx = blockDim.x * blockIdx.x + threadIdx.x;
 
     if (idx >= N) return; 
@@ -64,24 +65,36 @@ __global__ void softmax(const float* input, float* output, int N, float globalsu
     output[idx] /= globalsum;
 }
 
+__global__ void softmaxsum(float* output, float* maxsum, int N) {
+    int idx = blockDim.x * blockIdx.x + threadIdx.x;
+    
+    if (idx >= N) return;
+
+    atomicAdd(maxsum, output[idx]);
+}
+
 // input, output are device pointers (i.e. pointers to memory on the GPU)
-extern "C" void solve(const float* input, float* output, int N) {
+float solve(const float* input, float* output, int N) {
 
     int blocksPerGrid = (N + threadsPerBlock - 1) / threadsPerBlock;
 
-    float *d_input, *d_output, *d_globalmax, *d_globalsum;
-    float globalmax, globalsum;
+    float *d_input, *d_output, *d_globalmax, *d_globalsum, *d_maxsum;
+    float globalmax, globalsum, maxsum;
 
     hipMalloc(&d_input, N * sizeof(float));
     hipMalloc(&d_output, N * sizeof(float));
     hipMalloc(&d_globalmax, sizeof(float));
     hipMalloc(&d_globalsum, sizeof(float));
+    hipMalloc(&d_maxsum, sizeof(float));
 
     float init_max = -FLT_MAX;
-    float init_sum = 0.0;
+    float init_sum = 0.0f;
+    float init_maxsum = 0.0f;
+
     hipMemcpy(d_input, input, N * sizeof(float), hipMemcpyHostToDevice);
     hipMemcpy(d_globalmax, &init_max, sizeof(float), hipMemcpyHostToDevice);
     hipMemcpy(d_globalsum, &init_sum, sizeof(float), hipMemcpyHostToDevice);
+    hipMemcpy(d_maxsum, &init_maxsum, sizeof(float), hipMemcpyHostToDevice);
 
     findmax<<<blocksPerGrid, threadsPerBlock>>>(d_input, d_globalmax, N);
     hipMemcpy(&globalmax, d_globalmax, sizeof(float), hipMemcpyDeviceToHost);
@@ -89,26 +102,50 @@ extern "C" void solve(const float* input, float* output, int N) {
     exponentialsum<<<blocksPerGrid, threadsPerBlock>>>(d_input, d_output, N, globalmax, d_globalsum);
     hipMemcpy(&globalsum, d_globalsum, sizeof(float), hipMemcpyDeviceToHost);
 
-    softmax<<<blocksPerGrid, threadsPerBlock>>>(d_input, d_output, N, globalsum);
-    hipMemcpy(output, d_output, N * sizeof(float), hipMemcpyDeviceToHost);
+    softmax<<<blocksPerGrid, threadsPerBlock>>>(d_output, N, globalsum);
+
+    hipDeviceSynchronize();
+
+    softmaxsum<<<blocksPerGrid, threadsPerBlock>>>(d_output, d_maxsum, N);
+    hipMemcpy(&maxsum, d_maxsum, sizeof(float), hipMemcpyDeviceToHost);
+    
     hipDeviceSynchronize();
 
     hipFree(d_input);
     hipFree(d_output);
     hipFree(d_globalmax);
     hipFree(d_globalsum);
+    hipFree(d_maxsum);
+
+    return maxsum;
 }
 
-int main(){
+int main(int argc, char* argv[]) {
+    if (argc != 2) {
+        std::cerr << "usage: " << argv[0] << " <input_file>" << std::endl;
+        return 1;
+    }
+    
+    std::ifstream input_file;
+    std::string filename = argv[1];
+    
+    input_file.open(filename);
+    if (!input_file.is_open()) {
+        std::cerr << "fileopen error" << filename << std::endl;
+        return 1;
+    }
     int N;
-    std::cin >> N;
+    float softsum;
+    input_file >> N;
 
     std::vector<float> input(N), output(N);
 
-    for(int i = 0; i < N; ++i) std::cin >> input[i];
+    for(int i = 0; i < N; ++i) input_file >> input[i];
 
-    solve(input.data(), output.data(), N);
+    input_file.close();
 
-    for(int i = 0; i < N; ++i) std::cout << output[i] << " ";
-    std::cout << std::endl;
+    softsum = solve(input.data(), output.data(), N);
+    
+    // softmax sum for spj
+    std::cout << softsum << std::endl;
 }

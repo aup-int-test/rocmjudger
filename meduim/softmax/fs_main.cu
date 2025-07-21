@@ -4,6 +4,8 @@
 #include <hip/hip_runtime.h>
 #include <float.h>
 
+#include <fstream>
+
 __device__ void atomicMaxfloat(float *const addr, const float val) {
      if (*addr >= val) return;
 
@@ -78,13 +80,28 @@ extern "C" void solve(const float* input, float* output, int N) {
     hipFree(d_globalsum);
 }
 
-int main(){
+int main(int argc, char* argv[]) {
+    if (argc != 2) {
+        std::cerr << "usage: " << argv[0] << " <input_file>" << std::endl;
+        return 1;
+    }
+    
+    std::ifstream input_file;
+    std::string filename = argv[1];
+    
+    input_file.open(filename);
+    if (!input_file.is_open()) {
+        std::cerr << "fileopen error" << filename << std::endl;
+        return 1;
+    }
     int N;
-    std::cin >> N;
+    input_file >> N;
 
     std::vector<float> input(N), output(N);
 
-    for(int i = 0; i < N; ++i) std::cin >> input[i];
+    for(int i = 0; i < N; ++i) input_file >> input[i];
+
+    input_file.close();
 
     solve(input.data(), output.data(), N);
 

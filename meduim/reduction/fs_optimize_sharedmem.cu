@@ -48,49 +48,35 @@ extern "C" void solve(const float* input, float* output, int N) {
     hipFree(d_output);
 }
 
-int main(int argc, char* argv[]){
-    std::ifstream infile;
-    std::ofstream outfile;
-    
-    // 決定輸入來源
-    if (argc > 1) {
-        infile.open(argv[1]);
-        if (!infile.is_open()) {
-            std::cerr << "Error: Cannot open input file " << argv[1] << std::endl;
-            return 1;
-        }
+int main(int argc, char* argv[]) {
+    if (argc != 2) {
+        std::cerr << "usage: " << argv[0] << " <input_file>" << std::endl;
+        return 1;
     }
     
-    // 決定輸出目標
-    if (argc > 2) {
-        outfile.open(argv[2]);
-        if (!outfile.is_open()) {
-            std::cerr << "Error: Cannot open output file " << argv[2] << std::endl;
-            return 1;
-        }
+    std::ifstream input_file;
+    std::string filename = argv[1];
+    
+    input_file.open(filename);
+    if (!input_file.is_open()) {
+        std::cerr << "fileopen error" << filename << std::endl;
+        return 1;
     }
-    
-    // 選擇輸入流
-    std::istream& input_stream = (argc > 1) ? infile : std::cin;
-    std::ostream& output_stream = (argc > 2) ? outfile : std::cout;
-    
     int N;
     float output;
     
-    input_stream >> N;
+    input_file >> N;
     std::vector<float> input(N);
 
     for(int i = 0; i < N; ++i) {
-        input_stream >> input[i];
+        input_file >> input[i];
     }
+
+    input_file.close();
 
     solve(input.data(), &output, N);
 
-    output_stream << output << std::endl;
-    
-    // 關閉檔案
-    if (infile.is_open()) infile.close();
-    if (outfile.is_open()) outfile.close();
+    std::cout << output << std::endl;
     
     return 0;
 }

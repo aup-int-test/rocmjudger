@@ -4,6 +4,10 @@
 #include <hip/hip_runtime.h>
 #include <float.h>
 
+#include <fstream>
+
+#define threadsPerBlock 256
+
 __device__ void atomicMaxfloat(float *const addr, const float val) {
      if (*addr >= val) return;
 
@@ -17,35 +21,54 @@ __device__ void atomicMaxfloat(float *const addr, const float val) {
 }
 
 __global__ void findmax(const float* input, float* globalmax, int N) {
+    __shared__ float sdata[threadsPerBlock];
+    
     int idx = blockDim.x * blockIdx.x + threadIdx.x;
+    int tidx = threadIdx.x;
+    
+    sdata[tidx] = (idx < N) ? input[idx] : 0.0f;
+    
+    for (int i = blockDim.x / 2; i > 0; i >>= 1) {
+        // bank conflict?
+        if (tidx < i) sdata[tidx] = fmax(sdata[tidx], sdata[tidx + i]);
+        __syncthreads();
+    }
 
-    if (idx >= N) return;
-
-    atomicMaxfloat(globalmax, input[idx]); 
+    if (tidx == 0) atomicMaxfloat(globalmax, sdata[0]); 
 }
 
 __global__ void exponentialsum(const float* input, float* output, int N, float globalmax, float* globalsum) {
-    int idx = blockDim.x * blockIdx.x + threadIdx.x;
+    __shared__ float sdata[threadsPerBlock];
 
-    if (idx >= N) return;
+    int idx = blockDim.x * blockIdx.x + threadIdx.x;
+    int tidx = threadIdx.x;
 
     float val = expf(input[idx] - globalmax);
     output[idx] = val;
+
+    sdata[tidx] = (idx < N) ? val : 0.0f;
     
-    atomicAdd(globalsum, val); 
+    __syncthreads();
+
+    for (int i = blockDim.x / 2; i > 0; i >>= 1) {
+        if (tidx < i) sdata[tidx] += sdata[tidx + i];
+        __syncthreads();
+    }
+    
+    if (tidx == 0) atomicAdd(globalsum, sdata[0]); 
 }
 
 __global__ void softmax(const float* input, float* output, int N, float globalsum) {
     int idx = blockDim.x * blockIdx.x + threadIdx.x;
 
     if (idx >= N) return; 
-
+    
     output[idx] /= globalsum;
 }
 
 // input, output are device pointers (i.e. pointers to memory on the GPU)
 extern "C" void solve(const float* input, float* output, int N) {
-    int threadsPerBlock = 256;
+
     int blocksPerGrid = (N + threadsPerBlock - 1) / threadsPerBlock;
 
     float *d_input, *d_output, *d_globalmax, *d_globalsum;
@@ -78,13 +101,28 @@ extern "C" void solve(const float* input, float* output, int N) {
     hipFree(d_globalsum);
 }
 
-int main(){
+int main(int argc, char* argv[]) {
+    if (argc != 2) {
+        std::cerr << "usage: " << argv[0] << " <input_file>" << std::endl;
+        return 1;
+    }
+    
+    std::ifstream input_file;
+    std::string filename = argv[1];
+    
+    input_file.open(filename);
+    if (!input_file.is_open()) {
+        std::cerr << "fileopen error" << filename << std::endl;
+        return 1;
+    }
     int N;
-    std::cin >> N;
+    input_file >> N;
 
     std::vector<float> input(N), output(N);
 
-    for(int i = 0; i < N; ++i) std::cin >> input[i];
+    for(int i = 0; i < N; ++i) input_file >> input[i];
+
+    input_file.close();
 
     solve(input.data(), output.data(), N);
 
