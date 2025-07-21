@@ -3,10 +3,7 @@ CXXFLAGS = -O2
 
 SOURCES = \
     main.cu \
-    fs_main.cu \
-    optimize_sharedmem.cu \
-    fs_optimize_sharedmem.cu \
-    optimize_warpshuffle.cu
+	fs_main.cu
 
 TARGETS = $(patsubst %.cu,exe_%,$(SOURCES))
 

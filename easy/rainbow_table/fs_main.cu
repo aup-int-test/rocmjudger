@@ -3,6 +3,8 @@
 #include <iomanip>
 #include <hip/hip_runtime.h>
 
+#include <fstream>
+
 __device__ unsigned int fnv1a_hash(int input) {
     const unsigned int FNV_PRIME = 16777619;
     const unsigned int OFFSET_BASIS = 2166136261;
@@ -49,14 +51,29 @@ void solve(const int* input, unsigned int* output, int N, int R) {
     hipFree(d_output);
 }
 
-int main(){
+int main(int argc, char* argv[]) {
+    if (argc != 2) {
+        std::cerr << "usage: " << argv[0] << " <input_file>" << std::endl;
+        return 1;
+    }
+    
+    std::ifstream input_file;
+    std::string filename = argv[1];
+    
+    input_file.open(filename);
+    if (!input_file.is_open()) {
+        std::cerr << "fileopen error" << filename << std::endl;
+        return 1;
+    }
     int N, R;
-    std::cin >> N >> R;
+    input_file >> N >> R;
 
     std::vector<int> input(N);
     std::vector<unsigned int> output(N);
 
-    for(int i = 0; i < N; ++i) std::cin >> input[i];
+    for(int i = 0; i < N; ++i) input_file >> input[i];
+
+    input_file.close();
 
     solve(input.data(), output.data(), N, R);
 

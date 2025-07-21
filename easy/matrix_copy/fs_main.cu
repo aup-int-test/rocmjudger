@@ -3,6 +3,8 @@
 #include <iomanip>
 #include <hip/hip_runtime.h>
 
+#include <fstream>
+
 __global__ void copy_matrix_kernel(const float* A, float* B, int N) {
     int idx = blockDim.x * blockIdx.x + threadIdx.x;
 
@@ -28,13 +30,28 @@ void solve(const float* A, float* B, int N) {
     hipDeviceSynchronize();
 } 
 
-int main(){
+int main(int argc, char* argv[]) {
+    if (argc != 2) {
+        std::cerr << "usage: " << argv[0] << " <input_file>" << std::endl;
+        return 1;
+    }
+    
+    std::ifstream input_file;
+    std::string filename = argv[1];
+    
+    input_file.open(filename);
+    if (!input_file.is_open()) {
+        std::cerr << "fileopen error" << filename << std::endl;
+        return 1;
+    }
     int N;
-    std::cin >> N;
+    input_file >> N;
 
     std::vector<float> A(N * N), B(N * N);
 
-    for(int i = 0; i < N; ++i) for(int j = 0; j < N; ++j) std::cin >> A[i * N + j];
+    for(int i = 0; i < N; ++i) for(int j = 0; j < N; ++j) input_file >> A[i * N + j];
+
+    input_file.close();
 
     solve(A.data(), B.data(), N);
 

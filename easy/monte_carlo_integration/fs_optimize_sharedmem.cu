@@ -2,6 +2,7 @@
 #include <vector>
 #include <iomanip>
 #include <hip/hip_runtime.h>
+
 #include <fstream>
 
 #define threadperblock 256
@@ -54,16 +55,33 @@ void solve(const double* y_samples, double* result, double a, double b, int n_sa
     hipFree(d_result);
 }
 
-int main() {
+
+int main(int argc, char* argv[]) {
+    if (argc != 2) {
+        std::cerr << "usage: " << argv[0] << " <input_file>" << std::endl;
+        return 1;
+    }
+    
+    std::ifstream input_file;
+    std::string filename = argv[1];
+    
+    input_file.open(filename);
+    if (!input_file.is_open()) {
+        std::cerr << "fileopen error" << filename << std::endl;
+        return 1;
+    }
     int n_samples;
     double a, b, result;
-    std::cin >> a >> b >> n_samples;
+    input_file >> a >> b >> n_samples;
 
     std::vector<double> y_samples(n_samples);
 
-    for(int i = 0; i < n_samples; ++i) std::cin >> y_samples[i];
+    for(int i = 0; i < n_samples; ++i) input_file >> y_samples[i];
+
+    input_file.close();
 
     solve(y_samples.data(), &result, a, b, n_samples);
 
-    std::cout << result << std::endl;
+    std::cout << std::fixed << result << std::endl;
 }
+
