@@ -1,4 +1,4 @@
-# ReLU Activation Function
+# ReLU Activation 
 
 ## Description
 Implement a program that applies the ReLU (Rectified Linear Unit) activation function to an array of 32-bit floating point numbers on a GPU. The program should take an input array and produce an output array where each element is the result of applying ReLU function: f(x) = max(0, x).

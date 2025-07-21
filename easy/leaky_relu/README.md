@@ -1,4 +1,4 @@
-# Leaky ReLU Activation Function
+# Leaky ReLU 
 
 ## Description
 Implement a program that applies the Leaky ReLU activation function to an array of 32-bit floating point numbers on a GPU. The program should take an input array and produce an output array where each element is the result of applying Leaky ReLU function: f(x) = x if x > 0, else α*x where α = 0.01.

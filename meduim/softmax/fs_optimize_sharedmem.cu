@@ -20,6 +20,7 @@ __device__ void atomicMaxfloat(float *const addr, const float val) {
     } while (assumed != old);
 }
 
+// findmax優化後反而比較慢(一點點)，可能是bank conflict? 破thread沒return? 試試看warpshuffle?
 __global__ void findmax(const float* input, float* globalmax, int N) {
     __shared__ float sdata[threadsPerBlock];
     
@@ -37,6 +38,7 @@ __global__ void findmax(const float* input, float* globalmax, int N) {
     if (tidx == 0) atomicMaxfloat(globalmax, sdata[0]); 
 }
 
+// 快了兩倍多
 __global__ void exponentialsum(const float* input, float* output, int N, float globalmax, float* globalsum) {
     __shared__ float sdata[threadsPerBlock];
 

@@ -1,4 +1,4 @@
-# FNV1a Hash
+# RainBow Table
 
 ## Description
 Implement a program that applies the FNV1a hash function to an array of 32-bit integers on a GPU. The program should take an input array and a number of iterations R, then produce an output array where each element is hashed R times using the FNV1a algorithm.

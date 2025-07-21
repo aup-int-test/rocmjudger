@@ -1,4 +1,4 @@
-# Image Invert
+# Color Inversion
 
 ## Description
 Implement a program that performs image color inversion on a GPU. The program should take an input image represented as RGBA pixels and produce an output image where each RGB channel is inverted (255 - original_value). The alpha channel remains unchanged.

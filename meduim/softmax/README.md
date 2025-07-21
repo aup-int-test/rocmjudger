@@ -1,4 +1,4 @@
-# Softmax Activation Function
+# Softmax 
 
 ## Description
 Implement a program that applies the Softmax activation function to an array of 32-bit floating point numbers on a GPU. The program should take an input array and produce an output array where each element is the result of applying the numerically stable Softmax function: softmax(xi) = exp(xi - max) / Σ(exp(xj - max)).

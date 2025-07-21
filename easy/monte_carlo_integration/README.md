@@ -5,7 +5,6 @@ Implement a program that performs Monte Carlo numerical integration on a GPU usi
 
 - External libraries are not permitted
 - The solve function signature must remain unchanged
-- Must use shared memory and parallel reduction for optimization
 - The final result must be stored in the result variable
 
 ## Input Description
