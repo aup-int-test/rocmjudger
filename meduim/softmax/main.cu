@@ -5,7 +5,7 @@
 #include <float.h>
 
 __device__ void atomicMaxfloat(float *const addr, const float val) {
-     if (*addr >= val) return;
+    if (*addr >= val) return;
 
     unsigned int *const addr_as_ui = (unsigned int *)addr;
     unsigned int old = *addr_as_ui, assumed;
@@ -45,8 +45,8 @@ __global__ void softmax(const float* input, float* output, int N, float globalsu
 
 // input, output are device pointers (i.e. pointers to memory on the GPU)
 extern "C" void solve(const float* input, float* output, int N) {
-    int threadsPerBlock = 256;
-    int blocksPerGrid = (N + threadsPerBlock - 1) / threadsPerBlock;
+    int threadperblock = 256;
+    int blocksPerGrid = (N + threadperblock - 1) / threadperblock;
 
     float *d_input, *d_output, *d_globalmax, *d_globalsum;
     float globalmax, globalsum;
@@ -62,13 +62,13 @@ extern "C" void solve(const float* input, float* output, int N) {
     hipMemcpy(d_globalmax, &init_max, sizeof(float), hipMemcpyHostToDevice);
     hipMemcpy(d_globalsum, &init_sum, sizeof(float), hipMemcpyHostToDevice);
 
-    findmax<<<blocksPerGrid, threadsPerBlock>>>(d_input, d_globalmax, N);
+    findmax<<<blocksPerGrid, threadperblock>>>(d_input, d_globalmax, N);
     hipMemcpy(&globalmax, d_globalmax, sizeof(float), hipMemcpyDeviceToHost);
 
-    exponentialsum<<<blocksPerGrid, threadsPerBlock>>>(d_input, d_output, N, globalmax, d_globalsum);
+    exponentialsum<<<blocksPerGrid, threadperblock>>>(d_input, d_output, N, globalmax, d_globalsum);
     hipMemcpy(&globalsum, d_globalsum, sizeof(float), hipMemcpyDeviceToHost);
 
-    softmax<<<blocksPerGrid, threadsPerBlock>>>(d_input, d_output, N, globalsum);
+    softmax<<<blocksPerGrid, threadperblock>>>(d_input, d_output, N, globalsum);
     hipMemcpy(output, d_output, N * sizeof(float), hipMemcpyDeviceToHost);
     hipDeviceSynchronize();
 

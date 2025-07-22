@@ -10,6 +10,13 @@
 /* basic testcase
 0 2 8
 0.0625 0.25 0.5625 1.0 1.5625 2.25 3.0625 4.0
+
+// 3.18
+
+0 4 4
+1. 1. 1. 1.
+
+// 4
 */
 
 __global__ void montecarlo(const double* y_samples, double* result, double a, double b, int n_samples) {
@@ -18,10 +25,8 @@ __global__ void montecarlo(const double* y_samples, double* result, double a, do
     int idx = blockDim.x * blockIdx.x + threadIdx.x;
     int tidx = threadIdx.x;
 
-    if (idx < n_samples)
-        sdata[tidx] = (b - a) * y_samples[idx] / n_samples;
-    else
-        sdata[tidx] = 0.0;
+    sdata[tidx] = (idx < n_samples) ? (b - a) * y_samples[idx] / n_samples;
+    
     __syncthreads();
 
     // Parallel reduction within block

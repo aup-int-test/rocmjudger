@@ -22,7 +22,8 @@ extern "C" void solve(const float* input, float* output, int N) {
     hipMalloc(&d_output, sizeof(float));
 
     hipMemcpy(d_input, input, N * sizeof(float), hipMemcpyHostToDevice);
-
+    hipMemset(d_output, 0, sizeof(float));
+    
     int threadperblock = 256;
     int blockpergrid = (N + threadperblock - 1) / threadperblock;
 

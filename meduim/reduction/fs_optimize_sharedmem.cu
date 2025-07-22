@@ -35,7 +35,8 @@ extern "C" void solve(const float* input, float* output, int N) {
     hipMalloc(&d_output, sizeof(float));
 
     hipMemcpy(d_input, input, N * sizeof(float), hipMemcpyHostToDevice);
-
+    hipMemset(d_output, 0, sizeof(float));
+    
     int blockpergrid = (N + threadperblock - 1) / threadperblock;
 
     //size_t shared_mem_size = threadperblock * sizeof(float);

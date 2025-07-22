@@ -6,7 +6,7 @@
 
 #include <fstream>
 
-#define threadsPerBlock 256
+#define threadperblock 256
 
 __device__ void atomicMaxfloat(float *const addr, const float val) {
      if (*addr >= val) return;
@@ -21,7 +21,7 @@ __device__ void atomicMaxfloat(float *const addr, const float val) {
 }
 
 __global__ void findmax(const float* input, float* globalmax, int N) {
-    __shared__ float sdata[threadsPerBlock];
+    __shared__ float sdata[threadperblock];
     
     int idx = blockDim.x * blockIdx.x + threadIdx.x;
     int tidx = threadIdx.x;
@@ -37,7 +37,7 @@ __global__ void findmax(const float* input, float* globalmax, int N) {
 }
 
 __global__ void exponentialsum(const float* input, float* output, int N, float globalmax, float* globalsum) {
-    __shared__ float sdata[threadsPerBlock];
+    __shared__ float sdata[threadperblock];
 
     int idx = blockDim.x * blockIdx.x + threadIdx.x;
     int tidx = threadIdx.x;
@@ -76,7 +76,7 @@ __global__ void softmaxsum(float* output, float* maxsum, int N) {
 // input, output are device pointers (i.e. pointers to memory on the GPU)
 float solve(const float* input, float* output, int N) {
 
-    int blocksPerGrid = (N + threadsPerBlock - 1) / threadsPerBlock;
+    int blocksPerGrid = (N + threadperblock - 1) / threadperblock;
 
     float *d_input, *d_output, *d_globalmax, *d_globalsum, *d_maxsum;
     float globalmax, globalsum, maxsum;
@@ -96,17 +96,17 @@ float solve(const float* input, float* output, int N) {
     hipMemcpy(d_globalsum, &init_sum, sizeof(float), hipMemcpyHostToDevice);
     hipMemcpy(d_maxsum, &init_maxsum, sizeof(float), hipMemcpyHostToDevice);
 
-    findmax<<<blocksPerGrid, threadsPerBlock>>>(d_input, d_globalmax, N);
+    findmax<<<blocksPerGrid, threadperblock>>>(d_input, d_globalmax, N);
     hipMemcpy(&globalmax, d_globalmax, sizeof(float), hipMemcpyDeviceToHost);
 
-    exponentialsum<<<blocksPerGrid, threadsPerBlock>>>(d_input, d_output, N, globalmax, d_globalsum);
+    exponentialsum<<<blocksPerGrid, threadperblock>>>(d_input, d_output, N, globalmax, d_globalsum);
     hipMemcpy(&globalsum, d_globalsum, sizeof(float), hipMemcpyDeviceToHost);
 
-    softmax<<<blocksPerGrid, threadsPerBlock>>>(d_output, N, globalsum);
+    softmax<<<blocksPerGrid, threadperblock>>>(d_output, N, globalsum);
 
     hipDeviceSynchronize();
 
-    softmaxsum<<<blocksPerGrid, threadsPerBlock>>>(d_output, d_maxsum, N);
+    softmaxsum<<<blocksPerGrid, threadperblock>>>(d_output, d_maxsum, N);
     hipMemcpy(&maxsum, d_maxsum, sizeof(float), hipMemcpyDeviceToHost);
     
     hipDeviceSynchronize();
