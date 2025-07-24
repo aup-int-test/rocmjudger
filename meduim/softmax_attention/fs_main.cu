@@ -4,6 +4,8 @@
 #include <hip/hip_runtime.h>
 #include <limits.h>
 
+#include <fstream>
+
 #define threadperblock 256
 
 /*basic testcase
@@ -108,15 +110,30 @@ extern "C" void solve(const int* Q, const int* K, const int* V, int* output, int
     hipFree(d_output);
 }
 
-int main(){
+int main(int argc, char* argv[]) {
+    if (argc != 2) {
+        std::cerr << "usage: " << argv[0] << " <input_file>" << std::endl;
+        return 1;
+    }
+    
+    std::ifstream input_file;
+    std::string filename = argv[1];
+    
+    input_file.open(filename);
+    if (!input_file.is_open()) {
+        std::cerr << "fileopen error" << filename << std::endl;
+        return 1;
+    }
     int M, N, d; // Q[M * d], K[N * d], V[N * d]
-    std::cin >> M >> N >> d;
+    input_file >> M >> N >> d;
 
     std::vector<int> Q(M * d), K(N * d), V(N * d), output(M * d);
 
-    for(int i = 0; i < M; ++i) for(int j = 0; j < d; ++j) std::cin >> Q[i * d + j];
-    for(int i = 0; i < N; ++i) for(int j = 0; j < d; ++j) std::cin >> K[i * d + j]; 
-    for(int i = 0; i < N; ++i) for(int j = 0; j < d; ++j) std::cin >> V[i * d + j];
+    for(int i = 0; i < M; ++i) for(int j = 0; j < d; ++j) input_file >> Q[i * d + j];
+    for(int i = 0; i < N; ++i) for(int j = 0; j < d; ++j) input_file >> K[i * d + j]; 
+    for(int i = 0; i < N; ++i) for(int j = 0; j < d; ++j) input_file >> V[i * d + j];
+
+    input_file.close();
 
     solve(Q.data(), K.data(), V.data(), output.data(), M, N, d);
 

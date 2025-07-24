@@ -3,6 +3,8 @@
 #include <iomanip>
 #include <hip/hip_runtime.h>
 
+#include <fstream>
+
 /*
 2 3
 1 2
@@ -75,17 +77,32 @@ void solve(const int* input, const int* kernel, int* output, int input_rows, int
     hipFree(d_output);
 }
 
-int main(){
+int main(int argc, char* argv[]) {
+    if (argc != 2) {
+        std::cerr << "usage: " << argv[0] << " <input_file>" << std::endl;
+        return 1;
+    }
+    
+    std::ifstream input_file;
+    std::string filename = argv[1];
+    
+    input_file.open(filename);
+    if (!input_file.is_open()) {
+        std::cerr << "fileopen error" << filename << std::endl;
+        return 1;
+    }
     int input_rows, input_cols, kernel_rows, kernel_cols;
-    std::cin >> input_rows >> input_cols >> kernel_rows >> kernel_cols;
+    input_file >> input_rows >> input_cols >> kernel_rows >> kernel_cols;
 
     int output_rows = input_rows - kernel_rows + 1;
     int output_cols = input_cols - kernel_cols + 1;
 
     std::vector<int> input(input_rows * input_cols), kernel(kernel_rows * kernel_cols), output(output_rows * output_cols);
 
-    for(int i = 0; i < input_rows; ++i) for(int j = 0; j < input_cols; ++j) std::cin >> input[i * input_cols + j];
-    for(int i = 0; i < kernel_rows; ++i) for(int j = 0; j < kernel_cols; ++j) std::cin >> kernel[i * kernel_cols + j];
+    for(int i = 0; i < input_rows; ++i) for(int j = 0; j < input_cols; ++j) input_file >> input[i * input_cols + j];
+    for(int i = 0; i < kernel_rows; ++i) for(int j = 0; j < kernel_cols; ++j) input_file >> kernel[i * kernel_cols + j];
+
+    input_file.close();
 
     solve(input.data(), kernel.data(), output.data(), input_rows, input_cols, kernel_rows, kernel_cols);
 
