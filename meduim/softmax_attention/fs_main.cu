@@ -2,7 +2,7 @@
 #include <vector>
 #include <iomanip>
 #include <hip/hip_runtime.h>
-#include <limits.h>
+#include <float.h>
 
 #include <fstream>
 
@@ -25,31 +25,31 @@ output:
 5. 6. 7. 8.
 */
 
-__global__ void computescore(const int *Q, const int *K, int *QKT, int M, int N, int d){
+__global__ void computescore(const float *Q, const float *K, float *QKT, int M, int N, int d){
 
     // Q * KT / sqrt(d)
     int row = blockIdx.y * blockDim.y + threadIdx.y; // Q列
     int col = blockIdx.x * blockDim.x + threadIdx.x; // K列 = KT行
 
     if (row < M && col < N){
-        int sum = 0.0f;
+        float sum = 0.0f;
         for (int i = 0; i < d; ++i) {
             sum += Q[row * d + i] * K[col * d + i];  // KT用index算就好
         }
-        QKT[row * N + col] = sum / sqrtf((int)d);
+        QKT[row * N + col] = sum / sqrtf((float)d);
     }
 }
 
-__global__ void softmax(int *QKT, int M, int N) {
+__global__ void softmax(float *QKT, int M, int N) {
     int row = threadIdx.x + blockDim.x * blockIdx.x;
     
     if (row < M) {
-        int max_val = -INT_MAX;
+        float max_val = -FLT_MAX;
         for (int j = 0; j < N; ++j) {
             max_val = fmaxf(max_val, QKT[row * N + j]);
         }
         
-        int sum_exp = 0.0f;
+        float sum_exp = 0.0f;
         for (int j = 0; j < N; ++j) {
             QKT[row * N + j] = expf(QKT[row * N + j] - max_val);
             sum_exp += QKT[row * N + j];
@@ -62,12 +62,12 @@ __global__ void softmax(int *QKT, int M, int N) {
 }
 
 
-__global__ void computeresult(const int *QKT, const int *V, int *output, int M, int N, int d){
+__global__ void computeresult(const float *QKT, const float *V, float *output, int M, int N, int d){
     int row = blockIdx.y * blockDim.y + threadIdx.y;  // QKT列
     int col = blockIdx.x * blockDim.x + threadIdx.x;  // V行
 
     if(row < M && col < d){
-        int sum = 0.0f;
+        float sum = 0.0f;
         for (int k = 0; k < N; ++k) {
             sum += QKT[row * N + k] * V[k * d + col];
         }
@@ -75,20 +75,20 @@ __global__ void computeresult(const int *QKT, const int *V, int *output, int M, 
     }
 }
 
-extern "C" void solve(const int* Q, const int* K, const int* V, int* output, int M, int N, int d){
+extern "C" void solve(const float* Q, const float* K, const float* V, float* output, int M, int N, int d){
 
     int Qsize = M * d, Ksize = N * d, Vsize = N * d, QKTsize = M * N, outputsize = M * d;
-    int *d_Q, *d_K, *d_V, *d_QKT, *d_output;
+    float *d_Q, *d_K, *d_V, *d_QKT, *d_output;
 
-    hipMalloc(&d_Q, Qsize * sizeof(int));
-    hipMalloc(&d_K, Ksize * sizeof(int));
-    hipMalloc(&d_V, Vsize * sizeof(int));
-    hipMalloc(&d_QKT, QKTsize * sizeof(int));
-    hipMalloc(&d_output, outputsize * sizeof(int));
+    hipMalloc(&d_Q, Qsize * sizeof(float));
+    hipMalloc(&d_K, Ksize * sizeof(float));
+    hipMalloc(&d_V, Vsize * sizeof(float));
+    hipMalloc(&d_QKT, QKTsize * sizeof(float));
+    hipMalloc(&d_output, outputsize * sizeof(float));
 
-    hipMemcpy(d_Q, Q, Qsize * sizeof(int), hipMemcpyHostToDevice);
-    hipMemcpy(d_K, K, Ksize * sizeof(int), hipMemcpyHostToDevice);
-    hipMemcpy(d_V, V, Vsize * sizeof(int), hipMemcpyHostToDevice);
+    hipMemcpy(d_Q, Q, Qsize * sizeof(float), hipMemcpyHostToDevice);
+    hipMemcpy(d_K, K, Ksize * sizeof(float), hipMemcpyHostToDevice);
+    hipMemcpy(d_V, V, Vsize * sizeof(float), hipMemcpyHostToDevice);
 
     dim3 threads(16, 16);
     dim3 blocks((N + 15) / 16, (M + 15) / 16);
@@ -100,7 +100,7 @@ extern "C" void solve(const int* Q, const int* K, const int* V, int* output, int
     threads = dim3(16, 16);
 
     computeresult<<<blocks, threads>>>(d_QKT, d_V, d_output, M, N, d);
-    hipMemcpy(output, d_output, outputsize * sizeof(int), hipMemcpyDeviceToHost);
+    hipMemcpy(output, d_output, outputsize * sizeof(float), hipMemcpyDeviceToHost);
     hipDeviceSynchronize();
 
     hipFree(d_Q);
@@ -127,7 +127,7 @@ int main(int argc, char* argv[]) {
     int M, N, d; // Q[M * d], K[N * d], V[N * d]
     input_file >> M >> N >> d;
 
-    std::vector<int> Q(M * d), K(N * d), V(N * d), output(M * d);
+    std::vector<float> Q(M * d), K(N * d), V(N * d), output(M * d);
 
     for(int i = 0; i < M; ++i) for(int j = 0; j < d; ++j) input_file >> Q[i * d + j];
     for(int i = 0; i < N; ++i) for(int j = 0; j < d; ++j) input_file >> K[i * d + j]; 

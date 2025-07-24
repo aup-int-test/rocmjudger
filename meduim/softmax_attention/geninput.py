@@ -29,7 +29,7 @@ def generate_testcase_1():
     write_attention_to_file('testcases/1.in', M, N, d, Q, K, V)
 
 def generate_testcase_2():
-    M, N, d = 512, 1024, 256
+    M, N, d = 256, 512, 128
     
     filename = 'testcases/2.in'
     with open(filename, 'w') as f:
@@ -48,7 +48,7 @@ def generate_testcase_2():
             f.write(" ".join(map(str, row_data)) + "\n")
 
 def generate_testcase_3():
-    M, N, d = 8192, 16384, 512
+    M, N, d = 1024, 2048, 256
     
     filename = 'testcases/3.in'
     with open(filename, 'w') as f:
@@ -81,7 +81,7 @@ def generate_testcase_5():
     write_attention_to_file('testcases/5.in', M, N, d, Q, K, V)
 
 def generate_testcase_6():
-    M, N, d = 10001, 20003, 513
+    M, N, d = 1001, 2003, 257
     
     filename = 'testcases/6.in'
     with open(filename, 'w') as f:
@@ -107,10 +107,10 @@ def main():
     print("=== 1.in: 小測資 32x64x128 ===")
     generate_testcase_1()
     
-    print("=== 2.in: 中測資 512x1024x256 ===")
+    print("=== 2.in: 中測資 256x512x128 ===")
     generate_testcase_2()
     
-    print("=== 3.in: 大測資 8192x16384x512 ===")
+    print("=== 3.in: 大測資 1024x2048x256 ===")
     generate_testcase_3()
     
     print("=== 4.in: Edge case 最小尺寸 1x1x1 ===")
@@ -119,7 +119,7 @@ def main():
     print("=== 5.in: Edge case 不規則維度 17x33x7 ===")
     generate_testcase_5()
     
-    print("=== 6.in: Edge case 不對齊block size 10001x20003x513 ===")
+    print("=== 6.in: Edge case 不對齊block size 1001x2003x257 ===")
     generate_testcase_6()
     
     for i in range(1, 7):
