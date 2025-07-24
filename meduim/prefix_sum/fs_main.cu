@@ -4,6 +4,8 @@
 #include <hip/hip_runtime.h>
 #include <stdio.h>
 
+#include <fstream>
+
 template <int blk_size>
 __global__ void scan_kernel(const int* input, int* output, int* rst_next_level, int N){
     const int tid = threadIdx.x;
@@ -92,14 +94,28 @@ extern "C" void solve(const int* input, int* output, int N) {
     hipFree(d_output_2s);
 }
 
-int main(){
-
+int main(int argc, char* argv[]) {
+    if (argc != 2) {
+        std::cerr << "usage: " << argv[0] << " <input_file>" << std::endl;
+        return 1;
+    }
+    
+    std::ifstream input_file;
+    std::string filename = argv[1];
+    
+    input_file.open(filename);
+    if (!input_file.is_open()) {
+        std::cerr << "fileopen error" << filename << std::endl;
+        return 1;
+    }
     int N;
-    std::cin >> N;
+    input_file >> N;
 
     std::vector<int> input(N), output(N);
 
-    for(int i = 0; i < N; ++i) std::cin >> input[i];
+    for(int i = 0; i < N; ++i) input_file >> input[i];
+
+    input_file.close();
 
     solve(input.data(), output.data(), N);
 
