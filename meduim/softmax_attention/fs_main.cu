@@ -7,6 +7,7 @@
 #include <fstream>
 
 #define threadperblock 256
+#define TILE_SIZE 16
 
 /*basic testcase
 input:
@@ -24,18 +25,50 @@ output:
 4.29 5.29 6.29 7.29
 5. 6. 7. 8.
 */
-
 __global__ void computescore(const float *Q, const float *K, float *QKT, int M, int N, int d){
-
-    // Q * KT / sqrt(d)
-    int row = blockIdx.y * blockDim.y + threadIdx.y; // Q列
-    int col = blockIdx.x * blockDim.x + threadIdx.x; // K列 = KT行
-
-    if (row < M && col < N){
-        float sum = 0.0f;
-        for (int i = 0; i < d; ++i) {
-            sum += Q[row * d + i] * K[col * d + i];  // KT用index算就好
+    // 固定大小的 shared memory tiles
+    __shared__ float tile_Q[TILE_SIZE][TILE_SIZE];
+    __shared__ float tile_K[TILE_SIZE][TILE_SIZE];
+    
+    int bx = blockIdx.x, by = blockIdx.y;
+    int tx = threadIdx.x, ty = threadIdx.y;
+    
+    // 計算這個 thread 負責的輸出位置
+    int row = by * TILE_SIZE + ty;
+    int col = bx * TILE_SIZE + tx;
+    
+    float sum = 0.0f;
+    
+    // 對 d 維度進行 tiling
+    for (int k = 0; k < (d + TILE_SIZE - 1) / TILE_SIZE; k++) {
+        // 載入 Q tile
+        int q_col = k * TILE_SIZE + tx;
+        if (row < M && q_col < d) {
+            tile_Q[ty][tx] = Q[row * d + q_col];
+        } else {
+            tile_Q[ty][tx] = 0.0f;
         }
+        
+        // 載入 K tile (K 是轉置使用)
+        int k_col = k * TILE_SIZE + ty;
+        if (col < N && k_col < d) {
+            tile_K[tx][ty] = K[col * d + k_col];
+        } else {
+            tile_K[tx][ty] = 0.0f;
+        }
+        
+        __syncthreads();
+        
+        // 計算部分乘積
+        for (int i = 0; i < TILE_SIZE; i++) {
+            sum += tile_Q[ty][i] * tile_K[tx][i];
+        }
+        
+        __syncthreads();
+    }
+    
+    // 寫入結果
+    if (row < M && col < N) {
         QKT[row * N + col] = sum / sqrtf((float)d);
     }
 }

@@ -22,14 +22,14 @@ def write_attention_to_file(filename, M, N, d, Q, K, V):
             f.write("\n")
 
 def generate_testcase_1():
-    M, N, d = 32, 64, 128
+    M, N, d = 1, 1, 1
     Q = [round(random.uniform(-1.0, 1.0), 4) for _ in range(M * d)]
     K = [round(random.uniform(-1.0, 1.0), 4) for _ in range(N * d)]
     V = [round(random.uniform(-1.0, 1.0), 4) for _ in range(N * d)]
     write_attention_to_file('testcases/1.in', M, N, d, Q, K, V)
 
 def generate_testcase_2():
-    M, N, d = 256, 512, 128
+    M, N, d = 512, 512, 64
     
     filename = 'testcases/2.in'
     with open(filename, 'w') as f:
@@ -48,7 +48,7 @@ def generate_testcase_2():
             f.write(" ".join(map(str, row_data)) + "\n")
 
 def generate_testcase_3():
-    M, N, d = 1024, 2048, 256
+    M, N, d = 1024, 1024, 128
     
     filename = 'testcases/3.in'
     with open(filename, 'w') as f:
@@ -67,21 +67,21 @@ def generate_testcase_3():
             f.write(" ".join(map(str, row_data)) + "\n")
 
 def generate_testcase_4():
-    M, N, d = 1, 1, 1
-    Q = [round(random.uniform(-1.0, 1.0), 4)]
-    K = [round(random.uniform(-1.0, 1.0), 4)]
-    V = [round(random.uniform(-1.0, 1.0), 4)]
+    M, N, d = 2048, 2048, 256
+    Q = [round(random.uniform(-1.0, 1.0), 4) for _ in range(M * d)]  
+    K = [round(random.uniform(-1.0, 1.0), 4) for _ in range(N * d)] 
+    V = [round(random.uniform(-1.0, 1.0), 4) for _ in range(N * d)]  
     write_attention_to_file('testcases/4.in', M, N, d, Q, K, V)
 
 def generate_testcase_5():
-    M, N, d = 17, 33, 7
+    M, N, d = 4096, 4096, 512
     Q = [round(random.uniform(-10.0, 10.0), 4) for _ in range(M * d)]
     K = [round(random.uniform(-10.0, 10.0), 4) for _ in range(N * d)]
     V = [round(random.uniform(-10.0, 10.0), 4) for _ in range(N * d)]
     write_attention_to_file('testcases/5.in', M, N, d, Q, K, V)
 
 def generate_testcase_6():
-    M, N, d = 1001, 2003, 257
+    M, N, d = 4095, 4095, 511
     
     filename = 'testcases/6.in'
     with open(filename, 'w') as f:
@@ -104,22 +104,16 @@ def main():
     
     create_testcases_dir()
     
-    print("=== 1.in: 小測資 32x64x128 ===")
     generate_testcase_1()
     
-    print("=== 2.in: 中測資 256x512x128 ===")
     generate_testcase_2()
     
-    print("=== 3.in: 大測資 1024x2048x256 ===")
     generate_testcase_3()
     
-    print("=== 4.in: Edge case 最小尺寸 1x1x1 ===")
     generate_testcase_4()
     
-    print("=== 5.in: Edge case 不規則維度 17x33x7 ===")
     generate_testcase_5()
     
-    print("=== 6.in: Edge case 不對齊block size 1001x2003x257 ===")
     generate_testcase_6()
     
     for i in range(1, 7):

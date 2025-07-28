@@ -3,9 +3,9 @@
 echo "Compiling programs..."
 make
 
-if [ ! -f "exe_fs_main" ] || [ ! -f "exe_fs_serial" ]; then
+if [ ! -f "exe_fs_optimized_sharedmem" ] || [ ! -f "exe_fs_serial" ]; then
     echo "Compilation failed!"
-    echo "Expected files: exe_fs_main, exe_fs_serial"
+    echo "Expected files: exe_fs_optimized_sharedmem, exe_fs_serial"
     exit 1
 fi
 
@@ -31,7 +31,7 @@ for testfile in $TESTCASE_DIR/*.in; do
         
         echo "Testing case: $testname..."
         
-        ./exe_fs_main "$testfile" > $OUTPUT_DIR/gpu_output_$testname.txt 2>&1
+        ./exe_fs_optimized_sharedmem "$testfile" > $OUTPUT_DIR/gpu_output_$testname.txt 2>&1
         gpu_status=$?
         
         ./exe_fs_serial "$testfile" > $OUTPUT_DIR/cpu_output_$testname.txt 2>&1

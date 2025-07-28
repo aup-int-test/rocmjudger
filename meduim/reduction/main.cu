@@ -5,7 +5,7 @@
 
 #include <fstream>
 
-__global__ void reduction(const float* input, float* output, int N){
+__global__ void reduction(const int* input, int* output, int N){
     int idx = blockDim.x * blockIdx.x + threadIdx.x;
 
     if (idx >= N) return;
@@ -14,15 +14,15 @@ __global__ void reduction(const float* input, float* output, int N){
 }
 
 
-extern "C" void solve(const float* input, float* output, int N) {  
+extern "C" void solve(const int* input, int* output, int N) {  
 
-    float *d_input, *d_output;
+    int *d_input, *d_output;
 
-    hipMalloc(&d_input, N * sizeof(float));
-    hipMalloc(&d_output, sizeof(float));
+    hipMalloc(&d_input, N * sizeof(int));
+    hipMalloc(&d_output, sizeof(int));
 
-    hipMemcpy(d_input, input, N * sizeof(float), hipMemcpyHostToDevice);
-    hipMemset(d_output, 0, sizeof(float));
+    hipMemcpy(d_input, input, N * sizeof(int), hipMemcpyHostToDevice);
+    hipMemset(d_output, 0, sizeof(int));
     
     int threadperblock = 256;
     int blockpergrid = (N + threadperblock - 1) / threadperblock;
@@ -30,7 +30,7 @@ extern "C" void solve(const float* input, float* output, int N) {
     reduction<<<threadperblock, blockpergrid>>>(d_input, d_output, N);
     hipDeviceSynchronize();
 
-    hipMemcpy(output, d_output, sizeof(float), hipMemcpyDeviceToHost);
+    hipMemcpy(output, d_output, sizeof(int), hipMemcpyDeviceToHost);
 
     hipFree(d_input);
     hipFree(d_output);
@@ -38,10 +38,10 @@ extern "C" void solve(const float* input, float* output, int N) {
 
 int main(){
     int N;
-    float output;
+    int output;
     std::cin >> N;
 
-    std::vector<float> input(N);
+    std::vector<int> input(N);
 
     for(int i = 0; i < N; ++i) std::cin >> input[i];
 

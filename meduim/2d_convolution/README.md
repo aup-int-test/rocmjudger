@@ -25,7 +25,7 @@ k_kernel_rows1 k_kernel_rows2 ... k_kernel_rows_kernel_cols
 
 Constraints:
 - 1 ≤ input_rows, input_cols ≤ 3072, Input matrix dimensions(integer)
-- 1 ≤ kernel_rows, kernel_cols ≤ 31, Kernel matrix dimensions(integer)
+- 1 ≤ kernel_rows, kernel_cols ≤ 64, Kernel matrix dimensions(integer)
 - kernel_rows ≤ input_rows, kernel_cols ≤ input_cols
 - aij, kij, Matrix values(float)
 

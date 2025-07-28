@@ -12,34 +12,56 @@
 4 5 6
 1 0
 */
+__constant__ int c_kernel[64 * 64];
 
-// leetgpu上面怪怪的
-
-__global__ void convolution2D_kernel(const int* input, const int* kernel, int* output,
-                                    int input_rows, int input_cols, int kernel_rows, int kernel_cols,
-                                    int output_rows, int output_cols){
-
-    int row = blockIdx.y * blockDim.y + threadIdx.y;
-    int col = blockIdx.x * blockDim.x + threadIdx.x;
+__global__ void convolution2D_kernel(const int* input, int* output, 
+                                  int input_rows, int input_cols, 
+                                  int kernel_rows, int kernel_cols,
+                                  int output_rows, int output_cols) {
     
-    if (row >= output_rows || col >= output_cols) return;
+    int tile_rows = blockDim.y + kernel_rows - 1;
+    int tile_cols = blockDim.x + kernel_cols - 1;
     
-    int sum = 0;
-
-    // input_r = i, inout_c = j
-    // kernel_r = m, kernel_c = n
-    for (int kernel_r = 0; kernel_r < kernel_rows; kernel_r++) {
-        for (int kernel_c = 0; kernel_c < kernel_cols; kernel_c++) {
-            int input_r = row + kernel_r;
-            int input_c = col + kernel_c;
+    __shared__ int s_input[8132];
+    
+    int local_row = threadIdx.y;
+    int local_col = threadIdx.x;
+    
+    int global_row = blockIdx.y * blockDim.y + threadIdx.y;
+    int global_col = blockIdx.x * blockDim.x + threadIdx.x;
+    
+    int tile_start_row = blockIdx.y * blockDim.y;
+    int tile_start_col = blockIdx.x * blockDim.x;
+    
+    for (int i = local_row; i < tile_rows; i += blockDim.y) {
+        for (int j = local_col; j < tile_cols; j += blockDim.x) {
+            int input_row = tile_start_row + i;
+            int input_col = tile_start_col + j;
             
-            if(input_r < input_rows && input_c < input_cols){
-                sum += input[input_r * input_cols + input_c] * kernel[kernel_r * kernel_cols + kernel_c];
+            if (input_row < input_rows && input_col < input_cols) {
+                s_input[i * tile_cols + j] = input[input_row * input_cols + input_col];
+            } else {
+                s_input[i * tile_cols + j] = 0;  // padding
             }
         }
     }
     
-    output[row * output_cols + col] = sum;
+    __syncthreads();
+    
+    if (global_row < output_rows && global_col < output_cols) {
+        int sum = 0;
+        
+        for (int kr = 0; kr < kernel_rows; kr++) {
+            for (int kc = 0; kc < kernel_cols; kc++) {
+                int shared_row = local_row + kr;
+                int shared_col = local_col + kc;
+                sum += s_input[shared_row * tile_cols + shared_col] * 
+                       c_kernel[kr * kernel_cols + kc];
+            }
+        }
+        
+        output[global_row * output_cols + global_col] = sum;
+    }
 }
 
 void solve(const int* input, const int* kernel, int* output, int input_rows, int input_cols, int kernel_rows, int kernel_cols){
@@ -60,26 +82,16 @@ void solve(const int* input, const int* kernel, int* output, int input_rows, int
     hipMemcpy(d_input, input, inputsize, hipMemcpyHostToDevice);
     hipMemcpy(d_kernel, kernel, kernelsize, hipMemcpyHostToDevice);
     //hipMemset(d_output, 0, outputsize);
+    hipMemcpyToSymbol(c_kernel, kernel, kernelsize);
 
     dim3 threads(16, 16);  
     dim3 blocks((output_cols + threads.x - 1) / threads.x, (output_rows + threads.y - 1) / threads.y);
 
-    hipEvent_t start, stop;
-    hipEventCreate(&start);
-    hipEventCreate(&stop);
-    hipEventRecord(start, 0);
-
-    convolution2D_kernel<<<blocks, threads>>>(d_input, d_kernel, d_output,
-                      input_rows, input_cols, kernel_rows, kernel_cols,
-                      output_rows, output_cols);
+    convolution2D_kernel<<<blocks, threads>>>(
+            d_input, d_output, input_rows, input_cols, 
+            kernel_rows, kernel_cols, output_rows, output_cols);
     
-    hipEventRecord(stop, 0);
-    hipEventSynchronize(stop);
-
-    float elapsedTime;
-    hipEventElapsedTime(&elapsedTime, start, stop);
-    //printf("kernel time: %f\n", elapsedTime);
-
+    hipDeviceSynchronize();
     hipMemcpy(output, d_output, outputsize, hipMemcpyDeviceToHost);
     
     hipFree(d_input);

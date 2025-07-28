@@ -18,7 +18,7 @@ a1 a2 ... aN
 ```
 
 Constraints:
-- 1 ≤ N ≤ 200000000, Length of array(integer)
+- 1 ≤ N ≤ 100000000, Length of array(integer)
 - ai, Array values(float)
 
 ## Output Description

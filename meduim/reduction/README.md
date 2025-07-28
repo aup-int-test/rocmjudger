@@ -17,11 +17,11 @@ a1 a2 ... aN
 ```
 
 Constraints:
-- 1 ≤ N ≤ 100000000, Length of array(integer)
-- ai, Array values(float)
+- 1 ≤ N ≤ 1000000000, Length of array(integer)
+- ai, Array values(integer)
 
 ## Output Description
-Output a single floating point number representing the sum of all array elements.
+Output a single integer number representing the sum of all array elements.
 
 Output format:
 ```bash
@@ -35,10 +35,10 @@ Where sum = a1 + a2 + ... + aN
 ### Input
 ```
 5
-1.5 2.3 3.7 4.1 5.9
+1 2 3 4 5
 ```
 
 ### Output
 ```
-17.5
+15
 ```

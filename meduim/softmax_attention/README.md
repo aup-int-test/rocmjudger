@@ -29,8 +29,8 @@ vN1 vN2 ... vNd
 ```
 
 Constraints:
-- 1 ≤ M, N ≤ 100000, Sequence lengths(integer)
-- 1 ≤ d ≤ 1024, Feature dimension(integer)
+- 1 ≤ M, N ≤ 4096, Sequence lengths(integer)
+- 1 ≤ d ≤ 512, Feature dimension(integer)
 - qij, kij, vij, Matrix values(float)
 
 ## Output Description

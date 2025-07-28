@@ -6,9 +6,9 @@
 /*
 2 3
 1 2
-1. 2. 3.
-4. 5. 6.
-1. 0.
+1 2 3
+4 5 6
+1 0
 */
 
 // leetgpu上面怪怪的
@@ -22,7 +22,7 @@ __global__ void convolution2D_kernel(const int* input, const int* kernel, int* o
     
     if (row >= output_rows || col >= output_cols) return;
     
-    int sum = 0.0f;
+    int sum = 0;
 
     // input_r = i, inout_c = j
     // kernel_r = m, kernel_c = n
