@@ -36,12 +36,12 @@ def generate_testcase_4():
     write_array_to_file('testcases/4.in', N, array_data)
 
 def generate_testcase_5():
-    N = 1000
+    N = 100000000
     array_data = [0] * N
     write_array_to_file('testcases/5.in', N, array_data)
 
 def generate_testcase_6():
-    N = 50000001
+    N = 100000000
     
     filename = 'testcases/6.in'
     with open(filename, 'w') as f:
@@ -55,22 +55,16 @@ def main():
     
     create_testcases_dir()
     
-    print("=== 1.in: 小測資 10 ===")
     generate_testcase_1()
     
-    print("=== 2.in: 中測資 1024 ===")
     generate_testcase_2()
     
-    print("=== 3.in: 大測資 10000000 ===")
     generate_testcase_3()
     
-    print("=== 4.in: Edge case 最小尺寸 1 ===")
     generate_testcase_4()
     
-    print("=== 5.in: Edge case 全零陣列 1000 ===")
     generate_testcase_5()
     
-    print("=== 6.in: 50000001 ===")
     generate_testcase_6()
     
     for i in range(1, 7):

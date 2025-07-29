@@ -12,41 +12,29 @@ __global__ void scan_kernel(const int* input, int* output, int* rst_next_level, 
     const int bid = blockIdx.x;
     const int offset = bid * blk_size * 2;
 
+    // load data into shared memory
     __shared__ int temp[blk_size << 1];
 
-    if(offset + tid < N) 
-        temp[tid] = input[offset + tid];
-    else 
-        temp[tid] = 0;
+    if(offset + tid < N) temp[tid] = input[offset + tid];
+    else temp[tid] = 0.0f;
 
-    if(offset + tid + blk_size < N) 
-        temp[tid + blk_size] = input[offset + tid + blk_size];
-    else 
-        temp[tid + blk_size] = 0;
+    if(offset + tid + blk_size < N) temp[tid + blk_size] = input[offset + tid + blk_size];
+    else temp[tid + blk_size] = 0.0f;
 
     __syncthreads();
 
-    for(int step = 1; step < (blk_size << 1); step *= 2) {
-        int read_pos = tid * 2 + 1;  
-        
-        if(read_pos < (blk_size << 1) && read_pos >= step) {
-            temp[read_pos] += temp[read_pos - step];
-        }
-        
-        read_pos = tid * 2 + 2;   
-        if(read_pos < (blk_size << 1) && read_pos >= step) {
-            temp[read_pos] += temp[read_pos - step];
-        }
-        
+    // local scan
+    for(int d = 0; (1 << d) <= blk_size; d++) {
+        int right_id = tid + (((tid >> d) + 1) << d);
+        int left_id = (right_id ^ (1 << d)) | ((1 << d) - 1);
+        temp[right_id] += temp[left_id];
         __syncthreads();
     }
-    if(offset + tid < N) 
-        output[offset + tid] = temp[tid];
-    if(offset + tid + blk_size < N) 
-        output[offset + tid + blk_size] = temp[tid + blk_size];
-    
-    if(tid == 0) 
-        rst_next_level[bid] = temp[(blk_size << 1) - 1];
+
+    // store data back to global memory
+    if(offset + tid < N) output[offset + tid] = temp[tid];
+    if(offset + tid + blk_size < N) output[offset + tid + blk_size] = temp[tid + blk_size];
+    if(tid == 0) rst_next_level[bid] = temp[(blk_size << 1) - 1];
 }
 
 __global__ void scan_kernel_serial(int* input_output, int N) {

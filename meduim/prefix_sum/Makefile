@@ -5,7 +5,8 @@ HIPFLAGS = -O2
 
 CUDA_SOURCES = \
     main.cu \
-    fs_main.cu
+    fs_main.cu \
+	fs_optimized_upsweet.cu
 
 CPP_SOURCES = \
     fs_serial.cpp
