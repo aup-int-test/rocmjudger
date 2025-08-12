@@ -1,6 +1,6 @@
 HIPCC = hipcc
 
-TARGET = prefix_sum
+TARGET = softmax
 
 SRCS = main.cpp kernel.hip
 
