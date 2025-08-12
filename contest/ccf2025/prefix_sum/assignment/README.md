@@ -1,10 +1,10 @@
-# Prefix Sum (Parallel Scan) — HIP Implementation
+# Prefix Sum
 
 ## Code Structure
 
 ```
 .
-├── main.cpp        # CLI: reads input, calls solve(), prints result
+├── main.cpp        # Reads input, calls solve(), prints result
 ├── kernel.hip      # GPU kernels + solve() implementation
 ├── main.h          # Shared includes + solve() declaration
 ├── Makefile   
@@ -76,7 +76,7 @@ Hidden testcases will be used during grading, so ensure your solution handles.
 
 Your submitted folder must:
 
-Contain all required source files (main.cpp, kernel.hip, main.h, Makefile, README.md) so that it can be built directly with:
+Contain all required source files (`main.cpp`, `kernel.hip`, `main.h`, `Makefile`) so that it can be built directly with:
 
 ```bash
 make
@@ -132,5 +132,4 @@ Final result $S = [2, 3, 6, 10, 12, 13, 18, 18]$.
 * Works for inclusive/exclusive with minimal changes.
 
 ---
-
 
