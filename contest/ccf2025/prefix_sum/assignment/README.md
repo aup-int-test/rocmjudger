@@ -42,7 +42,7 @@ Produces executable: `prefix_sum`
 ---
 
 ## Testcases
-The testcases/ folder contains 15 sample input files.
+The `testcases/` folder contains 15 sample input files and output files.
 
 You may run them as:
 

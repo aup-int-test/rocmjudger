@@ -28,3 +28,4 @@ int main(int argc, char* argv[]) {
     for(int i = 0; i < N; ++i) std::cout << output[i] << " ";
     std::cout << std::endl;
 }
+

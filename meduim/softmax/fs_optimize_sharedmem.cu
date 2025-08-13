@@ -6,7 +6,7 @@
 
 #include <fstream>
 
-#define threadperblock 1024
+#define threadperblock 64
 
 __device__ void atomicMaxfloat(float *const addr, const float val) {
      if (*addr >= val) return;
