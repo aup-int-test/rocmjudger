@@ -1,5 +1,16 @@
 # Prefix Sum
 
+## DESCRIPTION
+
+Your task is to implement a GPU-accelerated program that computes the prefix sum of an array of integers efficiently. The program should take an input array of integers—potentially containing millions or even hundreds of millions of elements—and produce an output array where each element is the sum of all preceding values up to that position.
+
+## REQUIREMENTS
+
+* External libraries are not permitted
+* The `solve` function signature must remain unchanged
+* The final result must be stored in the output array
+
+
 ## Code Structure
 
 ```
@@ -9,7 +20,7 @@
 ├── main.h          # Shared includes + solve() declaration
 ├── Makefile   
 ├── README.md
-└── testcases.zip      # Sample testcases for local verification
+└── testcases.zip   # Sample testcases for local verification
 ```
 
 ## Build & Run
@@ -28,9 +39,22 @@ Produces executable: `prefix_sum`
 ./prefix_sum input.txt
 ```
 
-## I/O Format 
+---
 
-**Input**
+## TESTCASES
+The testcases/ folder contains 15 sample input files.
+
+You may run them as:
+
+```bash
+./prefix_sum testcases/1.in
+```
+
+Hidden testcases will be used during grading, so ensure your solution handles.
+
+Each file follows the input format described below.
+
+### Input
 
 ```
 N
@@ -42,37 +66,14 @@ Constraints:
 * `1 ≤ N ≤ 1000000000`
 * `-1000 ≤ ai ≤ 1000`
 
-**Output**
+### Output
 `prefix_sum(a1) prefix_sum(a2) ... prefix_sum(aN)\n`
 
 Where `prefix_sum(ai) = a1 + a2 + ... + ai`.
 
 ---
 
-### DESCRIPTION
-
-Implement a program that computes the prefix sum of an array of integers on a GPU. The program should take an input array and produce an output array where each element is the sum of all previous elements including itself.
-
-### REQUIREMENTS
-
-* External libraries are not permitted
-* The `solve` function signature must remain unchanged
-* The final result must be stored in the output array
-
-### TESTCASES
-The testcases/ folder contains six sample input files.
-
-Each file follows the input format described above.
-
-You may run them as:
-
-```bash
-./prefix_sum testcases/1.in
-```
-
-Hidden testcases will be used during grading, so ensure your solution handles.
-
-### SUBMISSION
+## SUBMISSION
 
 Your submitted folder must:
 
@@ -125,11 +126,6 @@ Let $A = [2, 1, 3, 4, 2, 1, 5, 0]$, $B = 4$.
 * Phase 3 (offset addition): Block 1 → `[12, 13, 18, 18]`
 
 Final result $S = [2, 3, 6, 10, 12, 13, 18, 18]$.
-
-**Notes**
-
-* The choice of $B$ affects shared memory usage and occupancy.
-* Works for inclusive/exclusive with minimal changes.
 
 ---
 
