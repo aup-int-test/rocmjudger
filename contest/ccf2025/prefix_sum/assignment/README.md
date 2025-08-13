@@ -1,10 +1,10 @@
 # Prefix Sum
 
-## DESCRIPTION
+## Description
 
 Your task is to implement a GPU-accelerated program that computes the prefix sum of an array of integers efficiently. The program should take an input array of integers—potentially containing millions or even hundreds of millions of elements—and produce an output array where each element is the sum of all preceding values up to that position.
 
-## REQUIREMENTS
+## Requirements
 
 * External libraries are not permitted
 * The `solve` function signature must remain unchanged
@@ -41,7 +41,7 @@ Produces executable: `prefix_sum`
 
 ---
 
-## TESTCASES
+## Testcases
 The testcases/ folder contains 15 sample input files.
 
 You may run them as:
@@ -57,23 +57,23 @@ Each file follows the input format described below.
 ### Input
 
 ```
-N
-a1 a2 ... aN
+5
+1 2 3 4 5
 ```
 
 Constraints:
 
 * `1 ≤ N ≤ 1000000000`
-* `-1000 ≤ ai ≤ 1000`
+* `-1000 ≤ input[i] ≤ 1000`
 
 ### Output
-`prefix_sum(a1) prefix_sum(a2) ... prefix_sum(aN)\n`
-
-Where `prefix_sum(ai) = a1 + a2 + ... + ai`.
+```
+1 3 6 10 15
+```
 
 ---
 
-## SUBMISSION
+## Submission
 
 Your submitted folder must:
 
