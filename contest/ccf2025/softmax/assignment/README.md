@@ -72,7 +72,7 @@ Constraints:
 0.090, 0.244, 0.665
 ```
 
-### Submission
+## Submission
 
 Your submitted folder must:
 
