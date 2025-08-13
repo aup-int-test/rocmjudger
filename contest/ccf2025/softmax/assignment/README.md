@@ -1,5 +1,16 @@
 # Softmax
 
+## Description
+
+Implement a program that computes the softmax of an array of floating-point numbers on a GPU. The program should take an input array and produce an output array.
+
+## Requirements
+
+* External libraries are not permitted
+* The `solve` function signature must remain unchanged
+* The final result must be stored in the output array
+* Use the numerically stable formulation with **max subtraction**
+
 ## Code Structure
 
 ```
@@ -28,41 +39,10 @@ Produces executable: `softmax`
 ./softmax input.txt
 ```
 
-## I/O Format
 
-**Input**
+## Testcases
 
-```
-N
-a1 a2 ... aN
-```
-
-Constraints:
-
-* `1 ≤ N ≤ 100000000`
-* `a_i` are floating-point numbers
-
-**Output**
-`softmax(a1) softmax(a2) ... softmax(aN)\n`
-
----
-
-### DESCRIPTION
-
-Implement a program that computes the softmax of an array of floating-point numbers on a GPU. The program should take an input array and produce an output array.
-
-### REQUIREMENTS
-
-* External libraries are not permitted
-* The `solve` function signature must remain unchanged
-* The final result must be stored in the output array
-* Use the numerically stable formulation with **max subtraction**
-
-### TESTCASES
-
-The `testcases/` folder contains six sample input files.
-
-Each file follows the input format described above.
+The `testcases/` folder contains 15 sample input files and output files.
 
 You may run them as:
 
@@ -75,7 +55,24 @@ absolute tolerance: 1e-8
 relative tolerance: 1e-6
 minimum denominator: 1e-12
 
-### SUBMISSION
+### Input
+
+```
+3
+1.0, 2.0, 3.0
+```
+
+Constraints:
+
+* `1 ≤ N ≤ 100000000`
+* `input[i]` are floating-point numbers
+
+### Output
+```
+0.090, 0.244, 0.665
+```
+
+### Submission
 
 Your submitted folder must:
 
@@ -93,13 +90,41 @@ make
 ./softmax <hidden_testcase.txt>
 ```
 
+---
+
 ## Hint: Softmax Algorithm
 
-Given an input vector x = \[x1, ..., xN], compute:
+Given an input vector
 
-* m = max(x)
-* t\_i = exp(x\_i − m) for each i
-* S = sum of all t\_i
-* y\_i = t\_i / S for each i
+$$
+x = [x_1, x_2, \dots, x_N],
+$$
 
-This max-subtraction form avoids overflow/underflow and improves numerical stability.
+compute:
+
+1. Maximum value:
+
+$$
+m = \max_{1 \leq i \leq N} x_i
+$$
+
+2. Exponentiation with max subtraction:
+
+$$
+t_i = e^{x_i - m}, \quad \forall i \in \{1, 2, \dots, N\}
+$$
+
+3. Sum of all exponentials:
+
+$$
+S = \sum_{i=1}^N t_i
+$$
+
+4. Softmax output:
+
+$$
+y_i = \frac{t_i}{S}, \quad \forall i \in \{1, 2, \dots, N\}
+$$
+
+This **max-subtraction** form avoids overflow/underflow and improves numerical stability.
+
