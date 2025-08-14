@@ -2,14 +2,13 @@
 
 ## Description
 
-Your task is to implement a GPU-accelerated program that computes the prefix sum of an array of integers efficiently. The program should take an input array of integers—potentially containing millions or even hundreds of millions of elements—and produce an output array where each element is the sum of all preceding values up to that position.
+Your task is to implement a GPU-accelerated program that computes the prefix sum of an array of integers efficiently.
+The program should take an input array of integers—potentially containing millions or even hundreds of millions of elements—and produce an output array where each element is the sum of all preceding values up to that position.
 
 ## Requirements
 
-* External libraries are not permitted
-* The `solve` function signature must remain unchanged
-* The final result must be stored in the output array
-
+* The `solve` function signature must remain unchanged.
+* Only a **single-GPU** implementation is allowed (no multi-GPU).
 
 ## Code Structure
 
@@ -31,7 +30,7 @@ Your task is to implement a GPU-accelerated program that computes the prefix sum
 make
 ```
 
-Produces executable: `prefix_sum`
+Produces executable: `prefix_sum`.
 
 ### Run
 
@@ -42,6 +41,7 @@ Produces executable: `prefix_sum`
 ---
 
 ## Testcases
+
 The `testcases/` folder contains 15 sample input files and output files.
 
 You may run them as:
@@ -50,23 +50,41 @@ You may run them as:
 ./prefix_sum testcases/1.in
 ```
 
-Hidden testcases will be used during grading, so ensure your solution handles.
+Hidden testcases will be used during grading, so ensure your solution handles large inputs and edge cases.
 
-Each file follows the input format described below.
+---
 
-### Input
+### Input Format
+
+* The first line contains a single integer $N$, the length of the array.
+* The second line contains $N$ space-separated integers representing the array values.
+
+**Example**
 
 ```
 5
 1 2 3 4 5
 ```
 
-Constraints:
+**Constraints**
 
-* `1 ≤ N ≤ 1000000000`
-* `-1000 ≤ input[i] ≤ 1000`
+* $1 \le N \le 1{,}000{,}000{,}000$
+* $-1000 \le \text{input}[i] \le 1000$
 
-### Output
+---
+
+### Output Format
+
+* Output $N$ space-separated integers representing the prefix sums in order.
+* Use an **inclusive scan**:
+
+  $$
+  S[i] = \sum_{j=0}^{i} A[j]
+  $$
+* End the output with a newline character.
+
+**Example**
+
 ```
 1 3 6 10 15
 ```
@@ -91,6 +109,8 @@ make
 ./prefix_sum <hidden_testcase.txt>
 ```
 
+---
+
 ## Hint: Blocked Prefix Sum Algorithm
 
 Given an input array $A[0 \dots n-1]$, the prefix sum problem computes an output array $S[0 \dots n-1]$ where:
@@ -107,25 +127,16 @@ $$
 
 A blocked (or tiled) prefix sum algorithm partitions the input array into $M$ blocks, each containing $B$ consecutive elements (the **blocking factor**). The algorithm proceeds in three main phases:
 
-**Phase 1: Local scan within each block**
-Each block $k$ independently computes the prefix sum of its elements (using shared memory), producing a *local scan*. The total sum of block $k$ (the last element of its local scan) is written to `blockSums[k]`. This step is fully parallel across blocks.
+1. **Local scan within each block**
+   Each block $k$ independently computes the prefix sum of its elements (using shared memory), producing a *local scan*.
+   The total sum of block $k$ (the last element of its local scan) is written to `blockSums[k]`.
+   This step is fully parallel across blocks.
 
-**Phase 2: Scan of block sums**
-The `blockSums` array is scanned to produce `blockOffsets`, where `blockOffsets[k]` is the total sum of all elements in preceding blocks $0 \dots k-1$. This is typically an **exclusive** scan.
+2. **Scan of block sums**
+   The `blockSums` array is scanned to produce `blockOffsets`, where `blockOffsets[k]` is the total sum of all elements in preceding blocks $0 \dots k-1$.
+   This is typically an **exclusive** scan.
 
-**Phase 3: Offset addition to local results**
-For each block $k$, all elements in its local scan are incremented by `blockOffsets[k]` to form the final global prefix sums.
-
-**Example**
-Let $A = [2, 1, 3, 4, 2, 1, 5, 0]$, $B = 4$.
-
-* Phase 1 (local scan):
-  Block 0 → `[2, 3, 6, 10]`, blockSum = 10
-  Block 1 → `[2, 3, 8, 8]`, blockSum = 8
-* Phase 2 (scan of block sums): `blockOffsets = [0, 10]`
-* Phase 3 (offset addition): Block 1 → `[12, 13, 18, 18]`
-
-Final result $S = [2, 3, 6, 10, 12, 13, 18, 18]$.
+3. **Offset addition to local results**
+   For each block $k$, all elements in its local scan are incremented by `blockOffsets[k]` to form the final global prefix sums.
 
 ---
-
