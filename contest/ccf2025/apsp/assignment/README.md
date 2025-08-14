@@ -53,23 +53,18 @@ Run a sample as:
 
 Hidden testcases will be used during grading; ensure your solution handles edge cases and large graphs.
 
-Each file follows the input/output formats below.
-
 ---
 
 ### Input Format
 
 * The graph is directed with non-negative edge weights.
-
 * All values are **32-bit integers** (use `int` in C/C++).
-
 * The first two integers are the number of vertices and edges: $(V, E)$.
-
 * Then follow $E$ edges; each edge is given by three integers:
 
-  $$
-  \mathrm{src}_i\ \ \mathrm{dst}_i\ \ \mathrm{w}_i \quad \text{for } i = 0,1,\dots,E-1 .
-  $$
+$$
+\mathrm{src}_i\ \ \mathrm{dst}_i\ \ \mathrm{w}_i \quad\text{for } i=0,1,\dots,E-1 .
+$$
 
 * Vertex IDs are $0,1,\dots,V-1$.
 
@@ -86,14 +81,14 @@ Each file follows the input/output formats below.
 * $0 \le E \le V \times (V-1)$
 * $0 \le \mathrm{src}_i, \mathrm{dst}_i < V$
 * $\mathrm{src}_i \ne \mathrm{dst}_i$ (no self-loops in the input)
-* If $\mathrm{src}_i = \mathrm{src}_j$ then $\mathrm{dst}_i \ne \mathrm{dst}_j$ (no duplicate edges with the same $\mathrm{src}$ and $\mathrm{dst}$)
+* If $\mathrm{src}_i=\mathrm{src}_j$ then $\mathrm{dst}_i \ne \mathrm{dst}_j$ (no duplicate edges with the same $\mathrm{src}$ and $\mathrm{dst}$)
 * $0 \le \mathrm{w}_i \le 1000$
 
 ---
 
 ### Output Format
 
-You must print $V^2$ integers to **standard output** representing the distance matrix $D$ where
+You must print $V^2$ integers to **standard output** representing the distance matrix $D$ where:
 
 $$
 D[i,j] = d(i,j)
@@ -103,24 +98,24 @@ is the shortest-path distance from vertex $i$ to vertex $j$.
 
 * Distances must be printed in **row-major order by source vertex**:
 
-  $$
-  \underbrace{d(0,0), d(0,1), \dots, d(0,V-1)}_{\text{row }0},\
-  \underbrace{d(1,0), \dots, d(1,V-1)}_{\text{row }1},\
-  \dots,\
-  \underbrace{d(V-1,0), \dots, d(V-1,V-1)}_{\text{row }V-1}.
-  $$
+$$
+\underbrace{d(0,0), d(0,1), \dots, d(0,V-1)}_{\text{row }0},\ 
+\underbrace{d(1,0), \dots, d(1,V-1)}_{\text{row }1},\ 
+\dots,\ 
+\underbrace{d(V-1,0), \dots, d(V-1,V-1)}_{\text{row }V-1}.
+$$
 
-* Diagonal entries must satisfy
+* Diagonal entries must satisfy:
 
-  $$
-  d(i,i) = 0 \quad \forall\, i .
-  $$
+$$
+d(i,i) = 0 \quad \forall\, i .
+$$
 
-* If there is **no path** from $i \to j$, output
+* If there is **no path** from $i \to j$, output:
 
-  $$
-  d(i,j) = 2^{30} - 1 = 1073741823 .
-  $$
+$$
+d(i,j) = 2^{30} - 1 = 1073741823 .
+$$
 
 **Example**
 
@@ -163,13 +158,12 @@ For each block index $k$ (from $0$ to $\lceil V/B \rceil - 1$):
 2. **Update pivot row and pivot column blocks** $(k,*)$ and $(*,k)$ — update distances in the same row or column as the pivot using newly computed pivot distances.
 3. **Update remaining blocks** $(i,j)$ — for all $i \ne k$ and $j \ne k$, update:
 
-   $$
-   D_{i,j} \leftarrow \min\!\bigl(D_{i,j},\ D_{i,k} + D_{k,j}\bigr) .
-   $$
+$$
+D_{i,j} \leftarrow \min\!\bigl(D_{i,j},\ D_{i,k} + D_{k,j}\bigr)
+$$
 
-   Here $D_{i,k}$ and $D_{k,j}$ come from the updated pivot row/column tiles.
+Here $D_{i,k}$ and $D_{k,j}$ come from the updated pivot row/column tiles.
 
 This blocking reduces cache misses by reusing submatrices multiple times before moving on, improving performance compared to the naïve Floyd–Warshall algorithm.
 
 ---
-
