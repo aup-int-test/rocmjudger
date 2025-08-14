@@ -2,7 +2,7 @@
 
 ## Description
 
-Your task is to implement a GPU-accelerated program that computes the prefix sum of an array of integers efficiently.
+Your task is to implement a GPU-accelerated program that computes the **prefix sum** of an array of integers efficiently.
 The program should take an input array of integers—potentially containing millions or even hundreds of millions of elements—and produce an output array where each element is the sum of all preceding values up to that position.
 
 ## Requirements
@@ -42,7 +42,7 @@ Produces executable: `prefix_sum`.
 
 ## Testcases
 
-The `testcases/` folder contains 15 sample input files and output files.
+The `testcases/` folder contains **15** sample input files and output files.
 
 You may run them as:
 
@@ -78,9 +78,10 @@ Hidden testcases will be used during grading, so ensure your solution handles la
 * Output $N$ space-separated integers representing the prefix sums in order.
 * Use an **inclusive scan**:
 
-  $$
-  S[i] = \sum_{j=0}^{i} A[j]
-  $$
+$$
+S[i] = \sum_{j=0}^{i} A[j]
+$$
+
 * End the output with a newline character.
 
 **Example**
@@ -125,18 +126,18 @@ $$
 S[i] = \sum_{j=0}^{i-1} A[j]
 $$
 
-A blocked (or tiled) prefix sum algorithm partitions the input array into $M$ blocks, each containing $B$ consecutive elements (the **blocking factor**). The algorithm proceeds in three main phases:
+A **blocked** (or tiled) prefix sum algorithm partitions the input array into $M$ blocks, each containing $B$ consecutive elements (the **blocking factor**). The algorithm proceeds in three main phases:
 
 1. **Local scan within each block**
    Each block $k$ independently computes the prefix sum of its elements (using shared memory), producing a *local scan*.
-   The total sum of block $k$ (the last element of its local scan) is written to `blockSums[k]`.
+   The total sum of block $k$ (the last element of its local scan) is written to $\text{blockSums}[k]$.
    This step is fully parallel across blocks.
 
 2. **Scan of block sums**
-   The `blockSums` array is scanned to produce `blockOffsets`, where `blockOffsets[k]` is the total sum of all elements in preceding blocks $0 \dots k-1$.
+   The $\text{blockSums}$ array is scanned to produce $\text{blockOffsets}$, where $\text{blockOffsets}[k]$ is the total sum of all elements in preceding blocks $0 \dots k-1$.
    This is typically an **exclusive** scan.
 
 3. **Offset addition to local results**
-   For each block $k$, all elements in its local scan are incremented by `blockOffsets[k]` to form the final global prefix sums.
+   For each block $k$, all elements in its local scan are incremented by $\text{blockOffsets}[k]$ to form the final global prefix sums.
 
 ---
