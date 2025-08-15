@@ -99,10 +99,10 @@ is the shortest-path distance from vertex $i$ to vertex $j$.
 * Distances must be printed in **row-major order by source vertex**:
 
 $$
-\underbrace{d(0,0), d(0,1), \dots, d(0,V-1)}_{\text{row }0},\ 
-\underbrace{d(1,0), \dots, d(1,V-1)}_{\text{row }1},\ 
-\dots,\ 
-\underbrace{d(V-1,0), \dots, d(V-1,V-1)}_{\text{row }V-1}.
+\underbrace{d(0,0),\, d(0,1),\, \ldots,\, d(0,V-1)}_{\text{row }0},\ 
+\underbrace{d(1,0),\, \ldots,\, d(1,V-1)}_{\text{row }1},\ 
+\ldots,\ 
+\underbrace{d(V-1,0),\, \ldots,\, d(V-1,V-1)}_{\text{row }V-1}.
 $$
 
 * Diagonal entries must satisfy:
