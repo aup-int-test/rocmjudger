@@ -149,7 +149,7 @@ Let $B$ be the block size. The $V \times V$ distance matrix is divided into $\lc
 For each block index $k$ (from $0$ to $\lceil V/B \rceil - 1$):
 
 1. **Update the pivot block** $(k,k)$ — compute shortest paths within the pivot block considering vertices inside it as intermediates.
-2. **Update pivot row and pivot column blocks** $(k,*)$ and $(*,k)$ — update distances in the same row or column as the pivot using newly computed pivot distances.
+2. **Update pivot row and pivot column blocks** — update distances in the same row or column as the pivot using newly computed pivot distances.
 3. **Update remaining blocks** $(i,j)$ — for all $i \ne k$ and $j \ne k$, update:
 
 $$
