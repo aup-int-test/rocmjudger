@@ -66,8 +66,8 @@ Run a sample as:
 
 Tolerances:
 
-* Absolute tolerance: $1\times 10^{-8}$
-* Relative tolerance: $1\times 10^{-6}$
+* Absolute tolerance: $1\times 10^{-6}$
+* Relative tolerance: $1\times 10^{-5}$
 * Minimum denominator: $1\times 10^{-12}$
 
 ---
@@ -107,7 +107,7 @@ Tolerances:
 
 ## Submission
 
-Your submitted folder must:
+Your submitted folder must named `softmax`
 
 Contain all required source files (`main.cpp`, `kernel.hip`, `main.h`, `Makefile`) so that it can be built directly with:
 
@@ -118,7 +118,7 @@ make
 The grader should be able to:
 
 ```bash
-cd <submission-folder>
+cd $HOME/hip_programming_contest/softmax
 make
 ./softmax <hidden_testcase.txt>
 ```

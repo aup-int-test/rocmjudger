@@ -125,7 +125,9 @@ $$
 
 ## Submission
 
-Your submission must include all required source files (`main.cpp`, `main.h`, `Makefile`) so it can be built with:
+Your submitted folder must named `apsp`:
+
+Contain all required source files (`main.cpp`, `main.h`, `Makefile`) so that it can be built directly with:
 
 ```bash
 make
@@ -134,7 +136,7 @@ make
 The grader will test with:
 
 ```bash
-cd <submission-folder>
+cd $HOME/hip_programming_contest/apsp
 make
 ./apsp <hidden_testcase.txt>
 ```

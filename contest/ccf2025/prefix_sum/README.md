@@ -94,7 +94,7 @@ $$
 
 ## Submission
 
-Your submitted folder must:
+Your submitted folder must named `prefix_sum`:
 
 Contain all required source files (`main.cpp`, `kernel.hip`, `main.h`, `Makefile`) so that it can be built directly with:
 
@@ -105,7 +105,7 @@ make
 The grader should be able to:
 
 ```bash
-cd <submission-folder>
+cd $HOME/hip_programming_contest/prefix_sum
 make
 ./prefix_sum <hidden_testcase.txt>
 ```
