@@ -28,7 +28,7 @@ __device__ __forceinline__ float warpReduceSum(float val)
 {
     for (int offset = WARP_SIZE / 2; offset > 0; offset /= 2)
     {
-        val += __shfl_down(0xffffffff, val, offset);
+        val += __shfl_down(val, offset, warpSize);
     }
     return val;
 }
@@ -86,6 +86,7 @@ void solve(const float *predictions, const float *targets, float *mse, int N)
 
     hipMemcpy(d_predictions, predictions, N * sizeof(float), hipMemcpyHostToDevice);
     hipMemcpy(d_targets, targets, N * sizeof(float), hipMemcpyHostToDevice);
+    hipMemset(d_mse, 0, sizeof(float));
 
     int GridDim = (N + (BLOCK_DIM * COARSE_FACTOR) - 1) / (BLOCK_DIM * COARSE_FACTOR);
     MseKernel<<<GridDim, BLOCK_DIM>>>(d_predictions, d_targets, d_mse, N);
