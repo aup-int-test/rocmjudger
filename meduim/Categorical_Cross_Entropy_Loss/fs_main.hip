@@ -53,7 +53,7 @@ void solve(const float* logits, const int* true_labels, float* loss, int N, int 
     hipMemcpy(d_true_labels, true_labels, N * sizeof(int), hipMemcpyHostToDevice);
     hipMemcpy(d_loss, loss, sizeof(float), hipMemcpyHostToDevice);
 
-    int threadsPerBlock = 256;
+    int threadsPerBlock = 64;
     int blocksPerGrid = (N + threadsPerBlock - 1) / threadsPerBlock;
 
     loss_kernel<<<blocksPerGrid, threadsPerBlock>>>(d_logits, d_true_labels, d_loss, N, C);

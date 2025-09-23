@@ -191,7 +191,7 @@ def main():
 
     # ========== 8. 較大批次 ==========
     # 控制在合理檔案大小；可依硬體再放大
-    B, C = 5000, 10
+    B, C = 16000, 4000
     labels = gen_random_labels(B, C)
     preds = gen_preds_from_logits(B, C, lambda C: logit_random_gaussian(C, 0.0, 1.2))
     fn = os.path.join(OUT_DIR, "8.in")
