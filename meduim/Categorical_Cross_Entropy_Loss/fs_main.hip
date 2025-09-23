@@ -85,21 +85,21 @@ int main(int argc, char* argv[]) {
 
     int N, C;
 
-    input_file::cin >> N >> C;
+    input_file >> N >> C;
 
     std::vector<float> logits(N * C);
     std::vector<int> true_labels(N);
     float loss;
 
     for(int i = 0; i < N; ++i){
-        for(int j = 0; j < C; ++j) input_file::cin >> logits[i * C + j];
+        for(int j = 0; j < C; ++j) input_file >> logits[i * C + j];
     }
 
-    for(int i = 0; i < N; ++i) input_file::cin >> true_labels[i];
+    for(int i = 0; i < N; ++i) input_file >> true_labels[i];
 
     input_file.close();
 
     solve(logits.data(), true_labels.data(), &loss, N, C);
 
-    std::cout << loss << std::endl;
+    std::cout << std::fixed << std::setprecision(6) << loss << std::endl;
 }

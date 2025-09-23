@@ -85,5 +85,5 @@ int main(){
 
     solve(logits.data(), true_labels.data(), &loss, N, C);
 
-    std::cout << loss << std::endl;
+    std::cout << std::fixed << std::setprecision(6) << loss << std::endl;
 }
