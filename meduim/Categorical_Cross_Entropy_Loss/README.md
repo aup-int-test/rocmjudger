@@ -89,6 +89,6 @@ L
 * $1 \le N \le 10{,}000$
 * $2 \le C \le 1{,}000$
 * $-10.0 \le \mathtt{logits}[i,j] \le 10.0$
-* $0 \le \mathtt{true\_labels}[i] < C$
+* $0 \le \mathtt{truelabels}[i] < C$
 
 
