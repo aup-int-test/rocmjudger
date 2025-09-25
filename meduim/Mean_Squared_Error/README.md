@@ -5,9 +5,8 @@
 Implement a GPU program to compute the **Mean Squared Error (MSE)** between predicted values and target values.
 Given two arrays of equal length, **predictions** and **targets**, the loss is defined as
 
-$$
-\mathrm{MSE} \;=\; \frac{1}{N}\sum_{i=1}^{N}\bigl(\text{predictions}_i - \text{targets}_i\bigr)^2
-$$
+$$\mathrm{MSE} = \frac{1}{N}\sum_{i=1}^{N}(\text{predictions}_i - \text{targets}_i)^2$$
+
 
 where **N** is the number of elements.
 

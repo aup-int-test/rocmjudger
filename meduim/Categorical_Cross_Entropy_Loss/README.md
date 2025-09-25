@@ -3,7 +3,7 @@
 ## Description
 
 Implement a GPU program to calculate the **categorical cross-entropy loss** for a batch of predictions.
-Given a matrix of predicted **logits** $Z \in \mathbb{R}^{N \times C}$ and a vector of **true class labels** $\text{true\_labels} \in \{0,\dots,C-1\}^N$, compute the **average** cross-entropy loss over the batch.
+Given a matrix of predicted **logits** $Z \in \mathbb{R}^{N \times C}$ and a vector of **true class labels** $\mathrm{true\_labels} \in \{0,\ldots,C-1\}^N$, compute the **average** cross-entropy loss over the batch.
 
 For a single sample $j$ with logits $z_j = [z_{j1}, \ldots, z_{jC}]$ and true label $y_j$, use the numerically stable form:
 
