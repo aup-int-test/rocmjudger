@@ -86,7 +86,8 @@ L
 
 ## Constraints
 
-* $1 \le N \le 10{,}000$
-* $2 \le C \le 1{,}000$
-* $-10.0 \le \text{logits}[i,j] \le 10.0$
-* $0 \le \text{true\_labels}[i] < C$
+- $1 \le N \le 10{,}000$
+- $2 \le C \le 1{,}000$
+- $-10.0 \le \text{logits}[i,j] \le 10.0$
+- $0 \le \text{true\_labels}[i] < C$
+
