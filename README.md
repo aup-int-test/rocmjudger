@@ -23,5 +23,3 @@ It provides a standardized set of solutions and build scripts to help evaluate H
 
 - **README.md**
   Challenge description.
-
-3. Run the compiled executable with appropriate input files or test cases.
