@@ -8,13 +8,13 @@ Given a matrix of predicted **logits** $Z \in \mathbb{R}^{N \times C}$ and a vec
 For a single sample $j$ with logits $z_j = [z_{j1}, \ldots, z_{jC}]$ and true label $y_j$, use the numerically stable form:
 
 $$
-\text{Loss}_j \;=\; \log\!\left(\sum_{k=1}^{C} e^{\,z_{jk}}\right) \;-\; z_{j y_j}.
+\mathrm{Loss}_j = \log \left( \sum_{k=1}^{C} e^{z_{jk}} \right) - z_{j y_j}
 $$
 
 The final output is the batch average:
 
 $$
-L \;=\; \frac{1}{N}\sum_{j=1}^{N} \text{Loss}_j.
+L = \frac{1}{N} \sum_{j=1}^{N} \mathrm{Loss}_j
 $$
 
 **Implementation Requirements**
