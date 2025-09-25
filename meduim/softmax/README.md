@@ -1,45 +1,47 @@
-# Softmax 
+# Softmax
 
 ## Description
-Implement a program that applies the Softmax activation function to an array of 32-bit floating point numbers on a GPU. The program should take an input array and produce an output array where each element is the result of applying the numerically stable Softmax function: softmax(xi) = exp(xi - max) / Σ(exp(xj - max)).
 
-- External libraries are not permitted
-- The solve function signature must remain unchanged
-- Must implement numerically stable version using **max subtraction**
-- The final result must be stored in the output array
+Implement a GPU program that applies the **numerically stable Softmax activation function** to an array of 32-bit floating-point numbers.
 
-## Input Description
-You will be given 1 value N, followed by N floating point values.
+For an input vector $x = [x_1, x_2, \dots, x_n]$, the output is
 
-Input format:
-```bash
-N
-a1 a2 ... aN
-```
+$$
+\sigma(x)_i = \frac{e^{x_i - m}}{\sum_{j=1}^{n} e^{x_j - m}}
+$$
 
-Constraints:
-- 1 ≤ N ≤ 100000000, Length of array(integer)
-- ai, Array values(float)
+where $m = \max(x)$.
+The subtraction of the maximum value $m$ ensures numerical stability.
 
-## Output Description
-Output N floating point numbers representing the Softmax activation result, separated by spaces, with a newline at the end.
+* **No external libraries** are allowed.
+* The `solve()` function signature must remain unchanged.
+* The final results must be stored in the output array.
 
-Output format:
-```bash
-softmax(a1) softmax(a2) ... softmax(aN)
-```
+## Input
 
-Where softmax(ai) = exp(ai - max(a)) / Σ(exp(aj - max(a))) and the sum of all output values equals 1.0.
+* First line: integer `N` — the length of the array (1 ≤ N ≤ 100000000).
+* Second line: `N` space-separated 32-bit floating-point numbers.
 
-## Example
+Example:
 
-### Input
 ```
 3
 1.0 2.0 3.0
 ```
 
-### Output
+## Output
+
+* `N` space-separated floating-point numbers representing the Softmax values, printed with a trailing newline.
+* Each value is
+
+  $$
+  \operatorname{softmax}(a_i) = \frac{\exp(a_i - \max(a))}{\sum_j \exp(a_j - \max(a))}
+  $$
+
+  and the outputs sum to **1.0**.
+
+Example:
+
 ```
 0.090031 0.244728 0.665240
 ```

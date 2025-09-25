@@ -1,54 +1,73 @@
-# Softmax Attetion
+# Softmax Attention
 
 ## Description
-Implement a program that computes the attention mechanism on a GPU using Query (Q), Key (K), and Value (V) matrices. The program should perform the scaled dot-product attention: Attention(Q,K,V) = softmax(QK^T/√d)V, where d is the dimension of the key vectors.
 
-- External libraries are not permitted
-- The solve function signature must remain unchanged
-- Must implement numerically stable softmax
-- The final result must be stored in the output array
+Implement a GPU program that computes **scaled dot-product attention** using Query (Q), Key (K), and Value (V) matrices.
+For $Q\in\mathbb{R}^{M\times d}$, $K\in\mathbb{R}^{N\times d}$, $V\in\mathbb{R}^{N\times d}$, the output $O\in\mathbb{R}^{M\times d}$ is
 
-## Input Description
-You will be given 3 values: M, N, d, followed by the Q matrix (M×d), K matrix (N×d), and V matrix (N×d).
+$$
+\mathrm{Attention}(Q,K,V) \;=\; \mathrm{softmax}\!\left(\frac{QK^{\mathsf T}}{\sqrt{d}}\right)\, V 
+$$
 
-Input format:
-```bash
+* **Numerical stability:** apply row-wise softmax with **max subtraction**. For logits $L = QK^{\mathsf T}/\sqrt{d}$ and each row $i$,
+
+  $$
+  s_{ij}=\frac{\exp(L_{ij}-\max_j L_{ij})}{\sum_{k=1}^{N}\exp(L_{ik}-\max_j L_{ij})}
+  $$
+* **No external libraries** are allowed.
+* The `solve()` function signature must remain unchanged.
+* The final results must be stored in the output array.
+
+## Input
+
+You will be given integers `M N d`, followed by matrices **Q (M×d)**, **K (N×d)**, and **V (N×d)** in row-major order.
+
+Format:
+
+```
 M N d
 q11 q12 ... q1d
-q21 q22 ... q2d
 ...
 qM1 qM2 ... qMd
 k11 k12 ... k1d
-k21 k22 ... k2d
 ...
 kN1 kN2 ... kNd
 v11 v12 ... v1d
-v21 v22 ... v2d
 ...
 vN1 vN2 ... vNd
 ```
 
-Constraints:
-- 1 ≤ M, N ≤ 4096, Sequence lengths(integer)
-- 1 ≤ d ≤ 512, Feature dimension(integer)
-- qij, kij, vij, Matrix values(float)
+**Constraints**
 
-## Output Description
-Output M×d floating point numbers representing the attention output, with each row on a new line and values separated by spaces.
+* $1 \le M,N \le 4096$
+* $1 \le d \le 512$
+* All values are 32-bit floats.
 
-Output format:
-```bash
+## Output
+
+Print the attention output matrix $O$ of shape $M\times d$.
+Each row on a new line; values are space-separated with a trailing newline.
+
+Format:
+
+```
 o11 o12 ... o1d
 o21 o22 ... o2d
 ...
 oM1 oM2 ... oMd
 ```
 
-Where the output is computed as: softmax(QK^T/√d)V
+## Notes (implementation hints)
+
+* Compute logits $L = QK^{\mathsf T}/\sqrt{d}$ using GPU parallelism (e.g., tiled matmul).
+* For each row of $L$: reduce to find `max`, compute `exp(L - max)`, reduce to get the row sum, then normalize.
+* Multiply the row-wise attention weights with $V$ to produce $O$.
+* The outputs in each row of the softmax weights sum to **1.0**.
 
 ## Example
 
-### Input
+**Input**
+
 ```
 2 3 4
 1. 0. 0. 0.
@@ -61,8 +80,9 @@ Where the output is computed as: softmax(QK^T/√d)V
 9. 10. 11. 12.
 ```
 
-### Output
+**Output**
+
 ```
 4.29 5.29 6.29 7.29
-5. 6. 7. 8.
+5.00 6.00 7.00 8.00
 ```
