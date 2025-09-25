@@ -1,6 +1,3 @@
-Here’s a clean English README draft you can use:
-
-````markdown
 # ROCm Judger Challenge Bank
 
 ## Overview
