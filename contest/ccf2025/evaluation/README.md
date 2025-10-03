@@ -1,4 +1,4 @@
-# CCC/CCF2025 Evaluation Runner
+# CCF2025 Evaluation Runner
 
 This repository provides the evaluation script `run.py` for the **CCF2025 HIP Programming Contest**.
 The script will iterate through each user’s contest directory and execute the evaluation process for all problems.
