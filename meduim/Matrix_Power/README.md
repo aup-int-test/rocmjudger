@@ -1,8 +1,4 @@
-當然可以 ✅
-以下是你的 **Matrix Power (HIP)** 題目的 README.md，
-完全仿照你給的 Logistic Regression 風格與 Markdown 格式。
 
----
 
 # Matrix Power
 
