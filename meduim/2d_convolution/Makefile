@@ -1,7 +1,14 @@
 HIPCC = hipcc
 CXX = g++
-CXXFLAGS = -O2
-HIPFLAGS = -O2
+CXXFLAGS = -O2 -Wno-unused-result
+
+# GPU-specific flags (only for HIP/CUDA files)
+HIPFLAGS = -O2 -Wno-unused-result
+
+# GPU Architecture (can be set from parent Makefile or command line)
+ifdef GPU_ARCH
+HIPFLAGS += --offload-arch=$(GPU_ARCH)
+endif
 
 CUDA_SOURCES = \
     main.cu \
@@ -26,5 +33,6 @@ exe_%: %.cpp
 
 clean:
 	rm -f exe_*
+	rm -rf testcases
 
 .PHONY: all clean
