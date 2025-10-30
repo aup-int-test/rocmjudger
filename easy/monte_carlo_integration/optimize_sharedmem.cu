@@ -17,7 +17,7 @@ __global__ void montecarlo(const double* y_samples, double* result, double a, do
     int idx = blockDim.x * blockIdx.x + threadIdx.x;
     int tidx = threadIdx.x;
 
-    sdata[tidx] = (idx < n_samples) ? (b - a) * y_samples[idx] / n_samples;
+    sdata[tidx] = (idx < n_samples) ? (b - a) * y_samples[idx] / n_samples : 0.0;
     
     __syncthreads();
 

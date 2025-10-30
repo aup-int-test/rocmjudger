@@ -1,0 +1,61 @@
+# Compiled executables
+exe_*
+main
+fs_main
+fs_optimized_*
+fs_optimize_*
+optimize_*
+
+# Test cases
+testcases/
+*.in
+*.out
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Compiled object files
+*.o
+*.obj
+*.a
+*.so
+*.dylib
+
+# Build artifacts
+*.exe
+*.out
+*.app
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Temporary files
+*.tmp
+*.log
+*.bak
+
+# HIP/ROCm specific
+*.hsaco
+*.co
+
+# Debug files
+*.dSYM/
+*.su
+*.idb
+*.pdb
+
+# History
+.history/
+
+
+
+

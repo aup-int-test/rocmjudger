@@ -44,3 +44,59 @@ Where ci = ai + bi for i = 1, 2, ..., n
 ```
 2.300 3.500 6.000 7.500 10.500
 ```
+
+## How to Run
+
+### 1. Build the Program
+```bash
+cd easy/vector_addition
+make
+```
+
+Or build from the top-level easy directory:
+```bash
+cd easy
+make vector_addition
+```
+
+To compile for a specific GPU architecture:
+```bash
+make GPU_ARCH=gfx90a    # For AMD MI210
+make GPU_ARCH=gfx908    # For AMD MI100
+make GPU_ARCH=gfx1100   # For AMD Radeon W7900
+```
+
+### 2. Generate Test Cases (Optional)
+```bash
+python3 geninput.py
+```
+
+### 3. Run the Program
+
+**Option A: Interactive input (stdin)**
+```bash
+./exe_main
+```
+Then enter the input manually.
+
+**Option B: File input**
+```bash
+./exe_fs_main testcases/1.in
+```
+
+**Option C: Pipe input**
+```bash
+echo "5
+1.5 2.3 3.7 4.1 5.9
+0.8 1.2 2.3 3.4 4.6" | ./exe_main
+```
+
+Or redirect from file:
+```bash
+./exe_main < testcases/1.in
+```
+
+### 4. Clean Up
+```bash
+make clean
+```
