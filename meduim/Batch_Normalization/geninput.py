@@ -41,6 +41,6 @@ for i, seed in enumerate([42, 123], start=1):
 generate_case("testcases/3.in", 1, 1, 9999)
 
 # ---- Edge case 2: maximal dimensions ----
-generate_case("testcases/4.in", 5000, 1024, 2025)
+generate_case("testcases/4.in", 10000, 1024, 2025)
 
 print("✅ Generated 4 BatchNorm testcases in ./testcases/")
