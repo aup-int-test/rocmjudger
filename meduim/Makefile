@@ -25,7 +25,9 @@ SUBDIRS = 2d_convolution \
           prefix_sum \
           reduction \
           softmax \
-          softmax_attention
+          softmax_attention \
+		  2D_Max_Pooling \
+		  Batch_Normalization
 
 .PHONY: all clean force $(SUBDIRS)
 
