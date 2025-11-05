@@ -1,41 +1,24 @@
-
-
 # Matrix Power
 
 ## Description
 
-Implement a GPU program that raises a square matrix **A** of size `N × N`
-to an integer power **P** using **HIP**.
-
-You must compute:
-
-$$
+Implement a GPU program that raises a square matrix **A (N×N)** to an integer power **P** using HIP.
+Compute:
+[
 \text{output} = A^P
-$$
+]
+with standard dense FP32 matrix multiplication in **row-major** order.
+For performance, use **shared-memory tiling** when performing matrix multiplications on the GPU.
 
-where matrix multiplication follows standard dense multiplication
-over 32-bit floating point numbers.
-
-The implementation should utilize **shared memory tiling** for better performance
-when performing matrix multiplication on the GPU.
-
----
-
-## Implementation Requirements
-
-* **External libraries are not permitted**
+* External libraries are not permitted
 * The `solve` function signature must remain unchanged
-* The final result must be written to the **output** array in **row-major** order
-* Use shared memory and synchronization to reduce global memory traffic
-
----
+* The final result must be written to the **output** array in row-major order
 
 ## Input Description
 
-The input file provides the matrix dimension **N**,
-the exponent **P**, and then the elements of matrix **A** in row-major order.
+You will be given two integers `N` and `P`, followed by `N×N` floating-point numbers for matrix `A` in row-major order.
 
-**Input format:**
+Input format:
 
 ```bash
 N P
@@ -45,23 +28,22 @@ A_21 A_22 ... A_2N
 A_N1 A_N2 ... A_NN
 ```
 
-### Example
+Constraints:
 
-```
-3 2
-1 2 3
-4 5 6
-7 8 9
-```
+* 1 ≤ N ≤ 1024
+* 1 ≤ P ≤ 20
+* −10.0 ≤ Aᵢⱼ ≤ 10.0
 
----
+Solutions are tested with:
+
+* Absolute tolerance ≤ 1e−2
+* Relative tolerance ≤ 1e−2
 
 ## Output Description
 
-Output the resulting matrix ( A^P ) in **row-major order**,
-formatted as `N` lines with `N` floating-point numbers per line.
+Output the resulting matrix (A^P) in **row-major order**, formatted as `N` lines with `N` floating-point numbers per line.
 
-**Output format:**
+Output format:
 
 ```bash
 O_11 O_12 ... O_1N
@@ -70,7 +52,18 @@ O_21 O_22 ... O_2N
 O_N1 O_N2 ... O_NN
 ```
 
-### Example
+## Example
+
+### Input
+
+```
+3 2
+1 2 3
+4 5 6
+7 8 9
+```
+
+### Output
 
 ```
 30.0000 36.0000 42.0000
@@ -78,38 +71,79 @@ O_N1 O_N2 ... O_NN
 102.0000 126.0000 150.0000
 ```
 
----
+## How to Run
 
-## Constraints
+### 1. Build the Program
 
+```bash
+cd hard/matrix_power
+make
 ```
-1 ≤ N ≤ 1024
-1 ≤ P ≤ 20
--10.0 ≤ A_ij ≤ 10.0
+
+Or build from the top-level hard directory:
+
+```bash
+cd hard
+make matrix_power
 ```
 
-Solutions are tested with:
+To compile for a specific GPU architecture:
 
-* Absolute tolerance ≤ 1e-2
-* Relative tolerance ≤ 1e-2
-
----
-
-## Example
-
-**Input:**
-
+```bash
+make GPU_ARCH=gfx90a    # For AMD MI210
+make GPU_ARCH=gfx908    # For AMD MI100
+make GPU_ARCH=gfx1100   # For AMD Radeon W7900
 ```
-3 3
+
+This builds `main` executable from the combined `main.hip` source.
+
+**Optional: Build legacy versions**
+
+```bash
+make all_versions  # Builds main, exe_main, and exe_fs_main
+```
+
+### 2. Generate Test Cases (Optional)
+
+```bash
+python3 geninput.py
+```
+
+### 3. Run the Program
+
+The combined `main` executable supports both stdin and file input:
+
+**Option A: Interactive input (stdin)**
+
+```bash
+./main
+```
+
+Then enter the input manually.
+
+**Option B: File input**
+
+```bash
+./main testcases/1.in
+```
+
+**Option C: Pipe input**
+
+```bash
+echo "3 2
 1 2 3
 4 5 6
-7 8 9
+7 8 9" | ./main
 ```
 
-**Output:**
+Or redirect from file:
 
+```bash
+./main < testcases/1.in
 ```
-468.0000 576.0000 684.0000
-1062.0000 1305.0000 1548.0000
-1656.0000 2034.0000 2412.0000
+
+### 4. Clean Up
+
+```bash
+make clean
 ```

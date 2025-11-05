@@ -2,34 +2,33 @@
 
 ## Description
 
-Solve the **Ordinary Least Squares (OLS)** regression problem on a GPU.
+Implement a GPU program to solve the **Ordinary Least Squares (OLS)** regression problem.
 Given a feature matrix **X** of size **n_samples × n_features** and a target vector **y** of size **n_samples**,
 compute the coefficient vector **β** that minimizes the sum of squared residuals:
 
-$$
-\min_{\beta} | X\beta - y |^2
-$$
+[
+\min_{\beta} |X\beta - y|^2
+]
 
-The closed-form solution to OLS is:
+The closed-form solution is:
 
-$$
+[
 \beta = (X^T X)^{-1} X^T y
-$$
+]
 
-All matrices are stored in **row-major order** and use **32-bit floating point numbers (FP32)**.
+All matrices are stored in **row-major order** and use **32-bit floating point (FP32)** arithmetic.
 
----
+* External libraries are not permitted
+* The `solve` function signature must remain unchanged
+* The final result must be stored in the output vector `beta`
 
 ## Input Description
 
-The input consists of:
+The input consists of two integers `n_samples` and `n_features`,
+followed by `n_samples × n_features` floating point values representing **X**,
+and `n_samples` floating point values representing **y**.
 
-* Two integers **n_samples** and **n_features**,
-  representing the number of samples and the number of features.
-* Followed by **n_samples × n_features** floating-point numbers representing matrix **X** (row-major).
-* Followed by **n_samples** floating-point numbers representing vector **y**.
-
-**Input format:**
+Input format:
 
 ```bash
 n_samples n_features
@@ -37,46 +36,31 @@ X_1 X_2 ... X_{n_samples×n_features}
 y_1 y_2 ... y_{n_samples}
 ```
 
----
+Constraints:
 
-## Output Description
-
-Output **n_features** floating-point numbers representing the coefficient vector **β**,
-separated by spaces and ending with a newline.
-
-**Output format:**
-
-```bash
-β_1 β_2 ... β_{n_features}
-```
-
----
-
-## Constraints
-
-$$
-1 \leq n_{\text{samples}} \leq 100{,}000
-$$
-$$
-1 \leq n_{\text{features}} \leq 1{,}000
-$$
-$$
-n_{\text{samples}} \geq n_{\text{features}}
-$$
-$$
--1000.0 \leq X_{ij}, y_i \leq 1000.0
-$$
+* 1 ≤ n_samples ≤ 100,000
+* 1 ≤ n_features ≤ 1,000
+* n_samples ≥ n_features
+* −1000.0 ≤ Xᵢⱼ, yᵢ ≤ 1000.0
 
 Solutions are tested with:
 
-* Absolute tolerance ≤ **1e−2**
-* Relative tolerance ≤ **1e−2**
+* Absolute tolerance ≤ 1e−2
+* Relative tolerance ≤ 1e−2
 
----
+## Output Description
+
+Output `n_features` floating point numbers representing the OLS coefficient vector **β**, separated by spaces and ending with a newline.
+
+Output format:
+
+```bash
+β1 β2 ... βn_features
+```
 
 ## Example
 
-**Input:**
+### Input
 
 ```
 3 2
@@ -88,17 +72,88 @@ Solutions are tested with:
 3
 ```
 
-**Output:**
+### Output
 
 ```
 0.000000 1.000000
 ```
 
----
+## How to Run
 
-## Implementation Requirements
+### 1. Build the Program
 
-* External libraries are **not permitted**.
-* The `solve` function signature must remain unchanged.
-* The final coefficients must be stored in the output vector **beta**.
-* Assume that matrix **X** is **full rank**, i.e. ( X^T X ) is invertible.
+```bash
+cd hard/ordinary_least_squares
+make
+```
+
+Or build from the top-level hard directory:
+
+```bash
+cd hard
+make ordinary_least_squares
+```
+
+To compile for a specific GPU architecture:
+
+```bash
+make GPU_ARCH=gfx90a    # For AMD MI210
+make GPU_ARCH=gfx908    # For AMD MI100
+make GPU_ARCH=gfx1100   # For AMD Radeon W7900
+```
+
+This builds the `main` executable from the combined `main.hip` source.
+
+**Optional: Build legacy versions**
+
+```bash
+make all_versions  # Builds main, exe_main, and exe_fs_main
+```
+
+### 2. Generate Test Cases (Optional)
+
+```bash
+python3 geninput.py
+```
+
+### 3. Run the Program
+
+The combined `main` executable supports both stdin and file input:
+
+**Option A: Interactive input (stdin)**
+
+```bash
+./main
+```
+
+Then enter the input manually.
+
+**Option B: File input**
+
+```bash
+./main testcases/1.in
+```
+
+**Option C: Pipe input**
+
+```bash
+echo "3 2
+1 2
+2 3
+3 4
+1
+2
+3" | ./main
+```
+
+Or redirect from file:
+
+```bash
+./main < testcases/1.in
+```
+
+### 4. Clean Up
+
+```bash
+make clean
+```

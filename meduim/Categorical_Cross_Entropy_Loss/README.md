@@ -2,33 +2,33 @@
 
 ## Description
 
-Implement a GPU program to calculate the **categorical cross-entropy loss** for a batch of predictions.
-Given a matrix of predicted **logits** $Z \in \mathbb{R}^{N \times C}$ and a vector of **true class labels** $\mathrm{true\_labels} \in \{0,\ldots,C-1\}^N$, compute the **average** cross-entropy loss over the batch.
+Implement a GPU program that computes the **categorical cross-entropy loss** for a batch of predictions.
+Given a matrix of **logits** ( Z \in \mathbb{R}^{N \times C} ) and a vector of **true class labels**
+( \mathrm{true_labels} \in {0, \ldots, C-1}^N ), compute the **average** cross-entropy loss over the batch.
 
-For a single sample $j$ with logits $z_j = [z_{j1}, \ldots, z_{jC}]$ and true label $y_j$, use the numerically stable form:
+For each sample ( j ) with logits ( z_j = [z_{j1}, \ldots, z_{jC}] ) and true label ( y_j ), the loss is:
 
-$$
-\mathrm{Loss}_j = \log \left( \sum_{k=1}^{C} e^{z_{jk}} \right) - z_{j y_j}
-$$
+[
+\mathrm{Loss}*j = \log \left( \sum*{k=1}^{C} e^{z_{jk}} \right) - z_{j y_j}
+]
 
-The final output is the batch average:
+The final result is the mean loss across all samples:
 
-$$
+[
 L = \frac{1}{N} \sum_{j=1}^{N} \mathrm{Loss}_j
-$$
+]
 
-**Implementation Requirements**
+To ensure numerical stability, use **log-sum-exp** by subtracting the row-wise maximum before exponentiation.
 
 * External libraries are not permitted
 * The `solve` function signature must remain unchanged
-* Use a numerically stable **log-sum-exp** (e.g., subtract the row max before exponentiation)
-* The final result (average loss) must be stored in the `loss` variable (a single float)
+* The final result must be stored in the variable `loss` (a single float)
 
 ## Input Description
 
-You will be given integers **N** (number of samples) and **C** (number of classes), followed by the $N\times C$ matrix of logits (row-major: one row per sample), and then **N** integers for the true labels.
+You will be given integers `N` (number of samples) and `C` (number of classes), followed by `N×C` floating-point numbers (the logits), and `N` integers (the true class labels).
 
-**Input format:**
+Input format:
 
 ```bash
 N C
@@ -39,11 +39,18 @@ zN1 zN2 ... zNC
 y1 y2 ... yN
 ```
 
+Constraints:
+
+* 1 ≤ N ≤ 10,000
+* 2 ≤ C ≤ 1,000
+* −10.0 ≤ logits[i,j] ≤ 10.0
+* 0 ≤ true_labels[i] < C
+
 ## Output Description
 
-Output a **single floating-point number**: the average loss $L$, followed by a newline.
+Output a single floating-point number representing the **average categorical cross-entropy loss**:
 
-**Output format:**
+Output format:
 
 ```bash
 L
@@ -84,11 +91,79 @@ L
 0.988204
 ```
 
-## Constraints
+## How to Run
 
-* $1 \le N \le 10{,}000$
-* $2 \le C \le 1{,}000$
-* $-10.0 \le \mathtt{logits}[i,j] \le 10.0$
-* $0 \le \mathtt{truelabels}[i] < C$
+### 1. Build the Program
 
+```bash
+cd medium/categorical_cross_entropy
+make
+```
 
+Or build from the top-level medium directory:
+
+```bash
+cd medium
+make categorical_cross_entropy
+```
+
+To compile for a specific GPU architecture:
+
+```bash
+make GPU_ARCH=gfx90a    # For AMD MI210
+make GPU_ARCH=gfx908    # For AMD MI100
+make GPU_ARCH=gfx1100   # For AMD Radeon W7900
+```
+
+This builds the `main` executable from the combined `main.hip` source.
+
+**Optional: Build legacy versions**
+
+```bash
+make all_versions  # Builds main, exe_main, and exe_fs_main
+```
+
+### 2. Generate Test Cases (Optional)
+
+```bash
+python3 geninput.py
+```
+
+### 3. Run the Program
+
+The combined `main` executable supports both stdin and file input:
+
+**Option A: Interactive input (stdin)**
+
+```bash
+./main
+```
+
+Then enter the input manually.
+
+**Option B: File input**
+
+```bash
+./main testcases/1.in
+```
+
+**Option C: Pipe input**
+
+```bash
+echo "2 3
+1.0 2.0 0.5
+0.1 3.0 1.5
+1 1" | ./main
+```
+
+Or redirect from file:
+
+```bash
+./main < testcases/1.in
+```
+
+### 4. Clean Up
+
+```bash
+make clean
+```
