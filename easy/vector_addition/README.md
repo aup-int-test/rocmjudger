@@ -66,6 +66,13 @@ make GPU_ARCH=gfx908    # For AMD MI100
 make GPU_ARCH=gfx1100   # For AMD Radeon W7900
 ```
 
+This builds `main` executable from the combined `main.hip` source.
+
+**Optional: Build legacy versions**
+```bash
+make all_versions  # Builds main, exe_main, and exe_fs_main
+```
+
 ### 2. Generate Test Cases (Optional)
 ```bash
 python3 geninput.py
@@ -73,27 +80,29 @@ python3 geninput.py
 
 ### 3. Run the Program
 
+The combined `main` executable supports both stdin and file input:
+
 **Option A: Interactive input (stdin)**
 ```bash
-./exe_main
+./main
 ```
 Then enter the input manually.
 
 **Option B: File input**
 ```bash
-./exe_fs_main testcases/1.in
+./main testcases/1.in
 ```
 
 **Option C: Pipe input**
 ```bash
 echo "5
 1.5 2.3 3.7 4.1 5.9
-0.8 1.2 2.3 3.4 4.6" | ./exe_main
+0.8 1.2 2.3 3.4 4.6" | ./main
 ```
 
 Or redirect from file:
 ```bash
-./exe_main < testcases/1.in
+./main < testcases/1.in
 ```
 
 ### 4. Clean Up
