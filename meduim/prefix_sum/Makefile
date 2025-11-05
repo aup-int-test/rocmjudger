@@ -8,22 +8,22 @@ ifdef GPU_ARCH
 HIPFLAGS += --offload-arch=$(GPU_ARCH)
 endif
 
-CUDA_SOURCES = \
-    main.cu \
-    fs_main.cu \
-	fs_optimized_upsweet.cu
+HIP_SOURCES = \
+    main.hip \
+    fs_main.hip \
+	fs_optimized_upsweet.hip
 
 CPP_SOURCES = \
     fs_serial.cpp
 
-CUDA_TARGETS = $(patsubst %.cu,exe_%,$(CUDA_SOURCES))
+HIP_TARGETS = $(patsubst %.hip,exe_%,$(HIP_SOURCES))
 CPP_TARGETS = $(patsubst %.cpp,exe_%,$(CPP_SOURCES))
 
-TARGETS = $(CUDA_TARGETS) $(CPP_TARGETS)
+TARGETS = $(HIP_TARGETS) $(CPP_TARGETS)
 
 all: $(TARGETS)
 
-exe_%: %.cu
+exe_%: %.hip
 	$(HIPCC) $(HIPFLAGS) $< -o $@
 
 exe_%: %.cpp

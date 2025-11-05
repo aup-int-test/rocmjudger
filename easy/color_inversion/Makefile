@@ -7,16 +7,16 @@ HIPFLAGS += --offload-arch=$(GPU_ARCH)
 endif
 
 SOURCES = \
-    main.cu \
-	fs_main.cu \
-	optimize_coalesdmem.cu \
-	fs_optimize_coalesdmem.cu
+    main.hip \
+	fs_main.hip \
+	optimize_coalesdmem.hip \
+	fs_optimize_coalesdmem.hip
 
-TARGETS = $(patsubst %.cu,exe_%,$(SOURCES))
+TARGETS = $(patsubst %.hip,exe_%,$(SOURCES))
 
 all: $(TARGETS)
 
-exe_%: %.cu
+exe_%: %.hip
 	$(HIPCC) $(HIPFLAGS) $< -o $@
 
 clean:

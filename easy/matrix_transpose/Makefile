@@ -7,14 +7,14 @@ HIPFLAGS += --offload-arch=$(GPU_ARCH)
 endif
 
 SOURCES = \
-    main.cu \
-	fs_main.cu
+    main.hip \
+	fs_main.hip
 
-TARGETS = $(patsubst %.cu,exe_%,$(SOURCES))
+TARGETS = $(patsubst %.hip,exe_%,$(SOURCES))
 
 all: $(TARGETS)
 
-exe_%: %.cu
+exe_%: %.hip
 	$(HIPCC) $(HIPFLAGS) $< -o $@
 
 clean:
