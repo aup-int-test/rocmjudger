@@ -18,13 +18,11 @@ __global__ void kernel(const int* input, int* histogram, int N, int num_bins) {
     }
     __syncthreads();
 
-    #pragma unroll
     for(int i = idx; i < N; i += totalthread){ 
         atomicAdd(&sdata[input[i]], 1);
     }
     __syncthreads();
     
-    #pragma unroll
     for(int i = threadIdx.x; i < num_bins; i += blockDim.x){
         atomicAdd(&histogram[i], sdata[i]); 
     }
